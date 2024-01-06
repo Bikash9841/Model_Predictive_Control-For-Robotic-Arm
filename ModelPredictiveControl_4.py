@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Unconstrained Model Predictive Control Implementation in Python 
-- This version is without an observer, that is, it assumes that the
-- the state vector is perfectly known
 
 Tutorial page that explains how to derive the algorithm is given here:
 https://aleksandarhaber.com/model-predictive-control-mpc-tutorial-1-unconstrained-formulation-derivation-and-implementation-in-python-from-scratch/
     
-
-
-@author: Aleksandar Haber
-Date: September 2023
 """
 
 import numpy as np
@@ -35,28 +29,36 @@ class ModelPredictiveControl(object):
     m1 = 0.3  # in kg, mass of link1
     m2 = 0.3  # in kg, mass of link2
     m3 = 0.3
-    L1 = 0.4  # in m, length of link1
-    L2 = 0.4  # in m, length of link2
-    L3 = 0.4
+    m4 = 0.3
+    L1 = 0.289  # in m, length of link1
+    L2 = 0.372  # in m, length of link2
+    L3 = 0.351
+    L4 = 0.33
     l1 = L1 / 2
     l2 = L2 / 2
     l3 = L3 / 2
+    l4 = L4/2
 
     # moment of inertias (kg*m^2)
     Iz1 = 0.00578
     Iz2 = 0.00578
     Iz3 = 0.00578
+    Iz4 = 0.00578
+
     Ix1 = 0.00355
     Ix2 = 0.00355
     Ix3 = 0.00355
+    Ix4 = 0.00355
+
     Iy1 = 0.00883
     Iy2 = 0.00883
     Iy3 = 0.00883
+    Iy4 = 0.00883
 
     g = 9.8065  # m/s**2, gravity
 
     # -------------------states computed after propagating dynamics
-    state_kp1 = np.zeros((6, 1))
+    state_kp1 = np.zeros((8, 1))
 
     def __init__(self, A, B, C, f, v, W3, W4, x0, desiredControlTrajectoryTotal):
 
@@ -97,7 +99,7 @@ class ModelPredictiveControl(object):
                                                                   self.states[0][2, 0],
                                                                   self.states[0][3,
                                                                                  0], self.states[0][4, 0],
-                                                                  self.states[0][5, 0])
+                                                                  self.states[0][5, 0], self.states[0][6, 0], self.states[0][7, 0])
 
         # ----------------------------------------------------------new segment added from here----------------------------
 
@@ -233,9 +235,9 @@ class ModelPredictiveControl(object):
                                                                                                                        - (self.L4 ^ 2*self.m4*sin(2*theta2 + 2*theta3 + 2*theta4))/2
                                                                                                                        - self.L2*self.L4*self.m4 *
                                                                                                                        cos(
-            2*theta2 + theta3 + theta4)
-            - self.L3*self.L4*self.m4 *
-            cos(
+                                                                                                                           2*theta2 + theta3 + theta4)
+                                                                                                                       - self.L3*self.L4*self.m4 *
+                                                                                                                       cos(
             2*theta2 + 2*theta3 + theta4)
             + self.L2*self.L3*self.m3*sin(2*theta2 + theta3) + self.L2*self.L3*self.m4*sin(2*theta2 + theta3))
         + (theta3_d*sin(2*theta1)*(self.Ix3 + self.Ix4 - self.Iy3 - self.Iy4)) / \
@@ -330,23 +332,23 @@ class ModelPredictiveControl(object):
         D = self.D_mat(theta0, theta1, theta2, theta3)
 
         # ------------------------------------State Space modelling starts from here---------------------------------
-        Ac = np.matrix(np.zeros((6, 6)))
-        Ac[:3, 3:] = np.identity(3)
+        Ac = np.matrix(np.zeros((8, 8)))
+        Ac[:4, 4:] = np.identity(4)
 
         # this one is for "-inv(M)N" from the paper to insert in lower 3X3 matrix of A
-        Ac[3:, 3:] = -(np.linalg.inv(D) * Cor)
+        Ac[4:, 4:] = -(np.linalg.inv(D) * Cor)
         return Ac
 
-    def ABC_final(self, theta0, theta1, theta2, dtheta0, dtheta1, dtheta2):
+    def ABC_final(self, theta0, theta1, theta2, theta3, dtheta0, dtheta1, dtheta2, dtheta3):
 
-        Ac = self.Ainitial_mat(theta0, theta1, theta2,
-                               dtheta0, dtheta1, dtheta2)
+        Ac = self.Ainitial_mat(theta0, theta1, theta2, theta3,
+                               dtheta0, dtheta1, dtheta2, dtheta3)
 
-        Bc = np.matrix(np.zeros((6, 3)))
-        Bc[3:, :] = np.identity(3)
+        Bc = np.matrix(np.zeros((8, 4)))
+        Bc[4:, :] = np.identity(4)
 
-        Cc = np.matrix(np.zeros((3, 6)))
-        Cc[:3, :3] = np.identity(3)
+        Cc = np.matrix(np.zeros((4, 8)))
+        Cc[:4, :4] = np.identity(4)
 
         # model discretization
         I = np.identity(Ac.shape[0])  # this is an identity matrix
@@ -362,7 +364,7 @@ class ModelPredictiveControl(object):
     # the gain matrix of the control algorithm
     # and returns them
 
-    def formLiftedMatrices(self, theta0, theta1, theta2, dtheta0, dtheta1, dtheta2):
+    def formLiftedMatrices(self, theta0, theta1, theta2, theta3, dtheta0, dtheta1, dtheta2, dtheta3):
         f = self.f
         v = self.v
         r = self.r
@@ -375,7 +377,7 @@ class ModelPredictiveControl(object):
         '''
 
         self.A, self.B, self.C = self.ABC_final(
-            theta0, theta1, theta2, dtheta0, dtheta1, dtheta2)
+            theta0, theta1, theta2, theta3, dtheta0, dtheta1, dtheta2, dtheta3)
 
         # lifted matrix O
         O = np.zeros(shape=(f * r, n))
@@ -465,7 +467,7 @@ class ModelPredictiveControl(object):
             ])
 
         # desiredControlTrajectory = desiredControlTrajectory.reshape(60, 1)
-        desiredControlTrajectory = desiredControlTrajectory.reshape(30, 1)
+        desiredControlTrajectory = desiredControlTrajectory.reshape(40, 1)
         # print(f"desiredControlafterReshaping: {desiredControlTrajectory}")
 
         # compute the vector s
@@ -476,12 +478,13 @@ class ModelPredictiveControl(object):
         inputSequenceComputed = np.matmul(self.gainMatrix, vectorS)
 
         D = self.D_mat(self.state_kp1[0, 0],
-                       self.state_kp1[1, 0], self.state_kp1[2, 0])
-        G = self.Gra_mat(self.state_kp1[1, 0], self.state_kp1[2, 0])
+                       self.state_kp1[1, 0], self.state_kp1[2, 0], self.state_kp1[3, 0])
+        G = self.Gra_mat(
+            self.state_kp1[1, 0], self.state_kp1[2, 0], self.state_kp1[3, 0])
 
-        inputApplied = np.zeros(shape=(3, 1))
+        inputApplied = np.zeros(shape=(4, 1))
 
-        inputApplied[0:3, :] = inputSequenceComputed[0:3, :]
+        inputApplied[0:4, :] = inputSequenceComputed[0:4, :]
 
         # --------------------------------------this one is torque that is computed----------------------------
 
@@ -502,7 +505,7 @@ class ModelPredictiveControl(object):
         self.O, self.M, self.gainMatrix = self.formLiftedMatrices(self.state_kp1[0, 0], self.state_kp1[1, 0],
                                                                   self.state_kp1[2,
                                                                                  0], self.state_kp1[3, 0],
-                                                                  self.state_kp1[4, 0], self.state_kp1[5, 0])
+                                                                  self.state_kp1[4, 0], self.state_kp1[5, 0], self.state_kp1[6, 0], self.state_kp1[7, 0])
         # increment the time step
         self.currentTimeStep = self.currentTimeStep + 1
 

@@ -64,7 +64,7 @@ l2 = L2 / 2
 l3 = L3 / 2
 l4 = L4/2
 
-# moment of inertias (kg*m^2)
+# moment of inertias (kg*m**2)
 Iz1 = 0.00578
 Iz2 = 0.00578
 Iz3 = 0.00578
@@ -93,53 +93,53 @@ def D_mat(theta0, theta1, theta2, theta3):
 
     # theta starts from 0 in this matrix
 
-    d11 = Iz1 + Iz2 + Iz3 + Iz4 + m4*pow(cos(theta0), 2)*(L3*sin(theta1 + theta2) + L2*sin(theta1) - L4*cos(theta1 + theta2 + theta3)) ^ 2 + L2 ^ 2*m2*sin(theta1) ^ 2 + m4*sin(theta0) ^ 2*(L3*sin(
-        theta1 + theta2) + L2*sin(theta1) - L4*cos(theta1 + theta2 + theta3)) ^ 2
-    + m3*cos(theta0) ^ 2*(L3*sin(theta1 + theta2) + L2*sin(theta1)) ^ 2 + \
-        m3*sin(theta0) ^ 2*(L3*sin(theta1 + theta2) + L2*sin(theta1)) ^ 2
+    d11 = Iz1 + Iz2 + Iz3 + Iz4 + m4*pow(cos(theta0), 2)*(L3*sin(theta1 + theta2) + L2*sin(theta1) - L4*cos(theta1 + theta2 + theta3)) ** 2 + L2 ** 2*m2*sin(theta1) ** 2 + m4*sin(theta0) ** 2*(L3*sin(
+        theta1 + theta2) + L2*sin(theta1) - L4*cos(theta1 + theta2 + theta3)) ** 2
+    + m3*cos(theta0) ** 2*(L3*sin(theta1 + theta2) + L2*sin(theta1)) ** 2 + \
+        m3*sin(theta0) ** 2*(L3*sin(theta1 + theta2) + L2*sin(theta1)) ** 2
 
     d12 = 0
     d13 = 0
     d14 = 0
     d21 = 0
-    d22 = Ix3 + Ix4/2 + Iy2 + Iy4/2 + L2 ^ 2*m2 + L2 ^ 2*m3 + L2 ^ 2 * \
-        m4 + L3 ^ 2*m3 + L3 ^ 2*m4 + L4 ^ 2*m4 - (Ix4*cos(2*theta0))/2
-    + (Iy4*cos(2*theta0))/2 - Ix3*cos(theta0) ^ 2 + \
-        Iy3*cos(theta0) ^ 2 + Ix2*sin(theta0) ^ 2
-    - Iy2*sin(theta0) ^ 2 + 2*L2*L4*m4 * \
+    d22 = Ix3 + Ix4/2 + Iy2 + Iy4/2 + L2 ** 2*m2 + L2 ** 2*m3 + L2 ** 2 * \
+        m4 + L3 ** 2*m3 + L3 ** 2*m4 + L4 ** 2*m4 - (Ix4*cos(2*theta0))/2
+    + (Iy4*cos(2*theta0))/2 - Ix3*cos(theta0) ** 2 + \
+        Iy3*cos(theta0) ** 2 + Ix2*sin(theta0) ** 2
+    - Iy2*sin(theta0) ** 2 + 2*L2*L4*m4 * \
         sin(theta2 + theta3) + 2*L2*L3*m3*cos(theta2)
     + 2*L2*L3*m4*cos(theta2) + 2*L3*L4*m4*sin(theta3)
 
-    d23 = Ix3 + Ix4/2 + Iy4/2 + L3 ^ 2*m3 + L3 ^ 2*m4 + L4 ^ 2 * \
+    d23 = Ix3 + Ix4/2 + Iy4/2 + L3 ** 2*m3 + L3 ** 2*m4 + L4 ** 2 * \
         m4 - (Ix4*cos(2*theta0))/2 + (Iy4*cos(2*theta0))/2
-    - Ix3*cos(theta0) ^ 2 + Iy3*cos(theta0) ^ 2 + L2*L4 * \
+    - Ix3*cos(theta0) ** 2 + Iy3*cos(theta0) ** 2 + L2*L4 * \
         m4*sin(theta2 + theta3) + L2*L3*m3*cos(theta2)
     + L2*L3*m4*cos(theta2) + 2*L3*L4*m4*sin(theta3)
 
-    d24 = Ix4/2 + Iy4/2 + L4 ^ 2*m4 - (Ix4*cos(2*theta0))/2
+    d24 = Ix4/2 + Iy4/2 + L4 ** 2*m4 - (Ix4*cos(2*theta0))/2
     + (Iy4*cos(2*theta0))/2 + L2*L4*m4 * \
         sin(theta2 + theta3) + L3*L4*m4*sin(theta3)
 
     d31 = 0
-    d32 = Ix3 + Ix4/2 + Iy4/2 + L3 ^ 2*m3 + L3 ^ 2 * \
-        m4 + L4 ^ 2*m4 - (Ix4*cos(2*theta0))/2
-    + (Iy4*cos(2*theta0))/2 - Ix3*cos(theta0) ^ 2 + Iy3 * \
-        cos(theta0) ^ 2 + L2*L4*m4*sin(theta2 + theta3)
+    d32 = Ix3 + Ix4/2 + Iy4/2 + L3 ** 2*m3 + L3 ** 2 * \
+        m4 + L4 ** 2*m4 - (Ix4*cos(2*theta0))/2
+    + (Iy4*cos(2*theta0))/2 - Ix3*cos(theta0) ** 2 + Iy3 * \
+        cos(theta0) ** 2 + L2*L4*m4*sin(theta2 + theta3)
     + L2*L3*m3*cos(theta2) + L2*L3*m4*cos(theta2) + 2*L3*L4*m4*sin(theta3)
-    d33 = Iy3 + Iy4 + L3 ^ 2*m3 + L3 ^ 2*m4 + L4 ^ 2 * \
-        m4 + Ix3*sin(theta0) ^ 2 + Ix4*sin(theta0) ^ 2
-    - Iy3*sin(theta0) ^ 2 - Iy4*sin(theta0) ^ 2 + 2*L3*L4*m4*sin(theta3)
+    d33 = Iy3 + Iy4 + L3 ** 2*m3 + L3 ** 2*m4 + L4 ** 2 * \
+        m4 + Ix3*sin(theta0) ** 2 + Ix4*sin(theta0) ** 2
+    - Iy3*sin(theta0) ** 2 - Iy4*sin(theta0) ** 2 + 2*L3*L4*m4*sin(theta3)
 
-    d34 = Iy4 + L4 ^ 2*m4 + Ix4 * \
-        sin(theta0) ^ 2 - Iy4*sin(theta0) ^ 2 + L3*L4*m4*sin(theta3)
+    d34 = Iy4 + L4 ** 2*m4 + Ix4 * \
+        sin(theta0) ** 2 - Iy4*sin(theta0) ** 2 + L3*L4*m4*sin(theta3)
 
     d41 = 0
-    d42 = Ix4/2 + Iy4/2 + L4 ^ 2*m4 - \
+    d42 = Ix4/2 + Iy4/2 + L4 ** 2*m4 - \
         (Ix4*cos(2*theta0))/2 + (Iy4*cos(2*theta0))/2
     + L2*L4*m4*sin(theta2 + theta3) + L3*L4*m4*sin(theta3)
-    d43 = Iy4 + L4 ^ 2*m4 + Ix4 * \
-        sin(theta0) ^ 2 - Iy4*sin(theta0) ^ 2 + L3*L4*m4*sin(theta3)
-    d44 = Iy4 + L4 ^ 2*m4 + Ix4*sin(theta0) ^ 2 - Iy4*sin(theta0) ^ 2
+    d43 = Iy4 + L4 ** 2*m4 + Ix4 * \
+        sin(theta0) ** 2 - Iy4*sin(theta0) ** 2 + L3*L4*m4*sin(theta3)
+    d44 = Iy4 + L4 ** 2*m4 + Ix4*sin(theta0) ** 2 - Iy4*sin(theta0) ** 2
 
     # ------------------------------------------------------------------------------------
 
@@ -158,33 +158,33 @@ def Cor_mat(theta1, theta2, theta3, theta4, theta1_d, theta2_d, theta3_d, theta4
     # theta starts from 1 in this matrix...
     # Coriolis matrix components
 
-    c11 = theta3_d*((L3 ^ 2*m3*sin(2*theta2 + 2*theta3))/2 + (L3 ^ 2*m4*sin(2*theta2 + 2*theta3))/2
-                    - (L4 ^ 2*m4*sin(2*theta2 + 2*theta3 + 2*theta4)) /
+    c11 = theta3_d*((L3 ** 2*m3*sin(2*theta2 + 2*theta3))/2 + (L3 ** 2*m4*sin(2*theta2 + 2*theta3))/2
+                    - (L4 ** 2*m4*sin(2*theta2 + 2*theta3 + 2*theta4)) /
                     2 - (L2*L4*m4*cos(2*theta2 + theta3 + theta4))/2
                     + (L2*L4*m4*cos(theta3 + theta4))/2 - L3 *
                     L4*m4*cos(2*theta2 + 2*theta3 + theta4)
                     - (L2*L3*m3*sin(theta3))/2 - (L2*L3*m4*sin(theta3)) /
                     2 + (L2*L3*m3*sin(2*theta2 + theta3))/2
-                    + (L2*L3*m4*sin(2*theta2 + theta3))/2) + theta2_d*((L3 ^ 2*m3*sin(2*theta2 + 2*theta3))/2
-                                                                       + (L3 ^ 2*m4*sin(2*theta2 + 2*theta3))/2 + (
-                                                                           L2 ^ 2*m2*sin(2*theta2))/2 + (L2 ^ 2*m3*sin(2*theta2))/2
-                                                                       + (L2 ^ 2*m4*sin(2*theta2))/2 - (L4 ^ 2*m4*sin(2*theta2 + 2 *
-                                                                                                                      theta3 + 2*theta4))/2 - L2*L4*m4*cos(2*theta2 + theta3 + theta4)
+                    + (L2*L3*m4*sin(2*theta2 + theta3))/2) + theta2_d*((L3 ** 2*m3*sin(2*theta2 + 2*theta3))/2
+                                                                       + (L3 ** 2*m4*sin(2*theta2 + 2*theta3))/2 + (
+                                                                           L2 ** 2*m2*sin(2*theta2))/2 + (L2 ** 2*m3*sin(2*theta2))/2
+                                                                       + (L2 ** 2*m4*sin(2*theta2))/2 - (L4 ** 2*m4*sin(2*theta2 + 2 *
+                                                                                                                        theta3 + 2*theta4))/2 - L2*L4*m4*cos(2*theta2 + theta3 + theta4)
                                                                        - L3*L4*m4*cos(2*theta2 + 2*theta3 + theta4) + L2*L3*m3*sin(2*theta2 + theta3) + L2*L3*m4*sin(2*theta2 + theta3))
     + L4*m4*theta4_d*sin(theta2 + theta3 + theta4)*(L3*sin(theta2 +
                                                            theta3) + L2*sin(theta2) - L4*cos(theta2 + theta3 + theta4))
 
-    c12 = theta1_d*((L3 ^ 2*m3*sin(2*theta2 + 2*theta3))/2 + (L3 ^ 2*m4*sin(2*theta2 + 2*theta3))/2 + (L2 ^ 2*m2*sin(2*theta2))/2
-                    + (L2 ^ 2*m3*sin(2*theta2))/2 + (L2 ^ 2*m4*sin(2*theta2)) /
-                    2 - (L4 ^ 2*m4*sin(2*theta2 + 2*theta3 + 2*theta4))/2
+    c12 = theta1_d*((L3 ** 2*m3*sin(2*theta2 + 2*theta3))/2 + (L3 ** 2*m4*sin(2*theta2 + 2*theta3))/2 + (L2 ** 2*m2*sin(2*theta2))/2
+                    + (L2 ** 2*m3*sin(2*theta2))/2 + (L2 ** 2*m4*sin(2*theta2)) /
+                    2 - (L4 ** 2*m4*sin(2*theta2 + 2*theta3 + 2*theta4))/2
                     - L2*L4*m4*cos(2*theta2 + theta3 + theta4) -
                     L3*L4*m4*cos(2*theta2 + 2*theta3 + theta4)
                     + L2*L3*m3*sin(2*theta2 + theta3) + L2*L3*m4*sin(2*theta2 + theta3)) - (theta2_d*sin(2*theta1)*(Ix2 + Ix3 + Ix4 - Iy2 - Iy3 - Iy4))/2
     - (theta3_d*sin(2*theta1)*(Ix3 + Ix4 - Iy3 - Iy4)) / \
         2 - (theta4_d*sin(2*theta1)*(Ix4 - Iy4))/2
 
-    c13 = theta1_d*((L3 ^ 2*m3*sin(2*theta2 + 2*theta3))/2 + (L3 ^ 2*m4*sin(2*theta2 + 2*theta3))/2
-                    - (L4 ^ 2*m4*sin(2*theta2 + 2*theta3 + 2*theta4)) /
+    c13 = theta1_d*((L3 ** 2*m3*sin(2*theta2 + 2*theta3))/2 + (L3 ** 2*m4*sin(2*theta2 + 2*theta3))/2
+                    - (L4 ** 2*m4*sin(2*theta2 + 2*theta3 + 2*theta4)) /
                     2 - (L2*L4*m4*cos(2*theta2 + theta3 + theta4))/2
                     + (L2*L4*m4*cos(theta3 + theta4))/2 - L3 *
                     L4*m4*cos(2*theta2 + 2*theta3 + theta4)
@@ -199,12 +199,12 @@ def Cor_mat(theta1, theta2, theta3, theta4, theta1_d, theta2_d, theta3_d, theta4
     - (theta3_d*sin(2*theta1)*(Ix4 - Iy4))/2 - (theta4_d*sin(2*theta1)
                                                 * (Ix4 - Iy4))/2 - (theta2_d*sin(2*theta1)*(Ix4 - Iy4))/2
 
-    c21 = (theta2_d*sin(2*theta1)*(Ix2 + Ix3 + Ix4 - Iy2 - Iy3 - Iy4))/2 - theta1_d*((L3 ^ 2*m3*sin(2*theta2 + 2*theta3))/2
-                                                                                     + (L3 ^ 2*m4*sin(2*theta2 + 2*theta3))/2
-                                                                                     + (L2 ^ 2*m2*sin(2*theta2))/2
-                                                                                     + (L2 ^ 2*m3*sin(2*theta2))/2
-                                                                                     + (L2 ^ 2*m4*sin(2*theta2))/2
-                                                                                     - (L4 ^ 2*m4*sin(2*theta2 + 2*theta3 + 2*theta4))/2
+    c21 = (theta2_d*sin(2*theta1)*(Ix2 + Ix3 + Ix4 - Iy2 - Iy3 - Iy4))/2 - theta1_d*((L3 ** 2*m3*sin(2*theta2 + 2*theta3))/2
+                                                                                     + (L3 ** 2*m4*sin(2*theta2 + 2*theta3))/2
+                                                                                     + (L2 ** 2*m2*sin(2*theta2))/2
+                                                                                     + (L2 ** 2*m3*sin(2*theta2))/2
+                                                                                     + (L2 ** 2*m4*sin(2*theta2))/2
+                                                                                     - (L4 ** 2*m4*sin(2*theta2 + 2*theta3 + 2*theta4))/2
                                                                                      - L2*L4*m4 *
                                                                                      cos(
                                                                                          2*theta2 + theta3 + theta4)
@@ -229,9 +229,9 @@ def Cor_mat(theta1, theta2, theta3, theta4, theta1_d, theta2_d, theta3_d, theta4
                                                                                                        + L3*cos(theta4)) + L4*m4*theta4_d*(L2*cos(theta3 + theta4)
                                                                                                                                            + L3*cos(theta4))
 
-    c31 = (theta2_d*sin(2*theta1)*(Ix3 + Ix4 - Iy3 - Iy4))/2 - theta1_d*((L3 ^ 2*m3*sin(2*theta2 + 2*theta3))/2
-                                                                         + (L3 ^ 2*m4*sin(2*theta2 + 2*theta3))/2
-                                                                         - (L4 ^ 2*m4*sin(2*theta2 + 2*theta3 + 2*theta4))/2
+    c31 = (theta2_d*sin(2*theta1)*(Ix3 + Ix4 - Iy3 - Iy4))/2 - theta1_d*((L3 ** 2*m3*sin(2*theta2 + 2*theta3))/2
+                                                                         + (L3 ** 2*m4*sin(2*theta2 + 2*theta3))/2
+                                                                         - (L4 ** 2*m4*sin(2*theta2 + 2*theta3 + 2*theta4))/2
                                                                          - (L2*L4*m4*cos(2*theta2 + theta3 + theta4))/2
                                                                          + (L2*L4*m4*cos(theta3 + theta4))/2
                                                                          - L3*L4*m4 *
@@ -301,11 +301,11 @@ def Ainitial_mat(theta0, theta1, theta2, theta3, dtheta0, dtheta1, dtheta2, dthe
     D = D_mat(theta0, theta1, theta2, theta3)
 
     # ------------------------------------State Space modelling starts from here---------------------------------
-    Ac = np.matrix(np.zeros((6, 6)))
-    Ac[:3, 3:] = np.identity(3)
+    Ac = np.matrix(np.zeros((8, 8)))
+    Ac[:4, 4:] = np.identity(4)
 
     # this one is for "-inv(M)N" from the paper to insert in lower 3X3 matrix of A
-    Ac[3:, 3:] = -(np.linalg.inv(D) * Cor)
+    Ac[4:, 4:] = -(np.linalg.inv(D) * Cor)
     return Ac
 
 
@@ -316,11 +316,11 @@ def ABC_final(theta0, theta1, theta2, theta3, dtheta0, dtheta1, dtheta2, dtheta3
     Ac = Ainitial_mat(theta0, theta1, theta2, theta3,
                       dtheta0, dtheta1, dtheta2, dtheta3)
 
-    Bc = np.matrix(np.zeros((6, 3)))
-    Bc[3:, :] = np.identity(3)
+    Bc = np.matrix(np.zeros((8, 4)))
+    Bc[4:, :] = np.identity(4)
 
-    Cc = np.matrix(np.zeros((3, 6)))
-    Cc[:3, :3] = np.identity(3)
+    Cc = np.matrix(np.zeros((4, 8)))
+    Cc[:4, :4] = np.identity(4)
 
     # model discretization
     I = np.identity(Ac.shape[0])  # this is an identity matrix
@@ -348,7 +348,7 @@ def invK(x, y, z, q1, q2, q3):
 
 
 A, B, C = ABC_final(
-    theta[0], theta[1], theta[2], dtheta[0], dtheta[1], dtheta[2])
+    theta[0], theta[1], theta[2], theta[3], dtheta[0], dtheta[1], dtheta[2], dtheta[3])
 
 r = C.shape[0]  # no of outputs
 m = B.shape[1]  # number of inputs
@@ -401,11 +401,12 @@ for i in range(f):
 timeSteps = 200
 
 # ------------------simple trajectory--------------------------------
-xd, yd, zd = invK(0.4, 0.2, 0, 0, 90, 0)
-print(xd, yd, zd)
-start_positions = np.matrix([[0], [0], [0]])  # Initial joint angles
-# end_positions = np.matrix([[45], [45], [-90]])  # Final joint angles
-end_positions = np.matrix([[xd], [yd], [zd]])
+# xd, yd, zd = invK(0.4, 0.2, 0, 0, 90, 0)
+# print(xd, yd, zd)
+
+start_positions = np.matrix([[0], [0], [0], [0]])  # Initial joint angles
+end_positions = np.matrix([[30], [45], [-90], [90]])  # Final joint angles
+# end_positions = np.matrix([[joint1], [joint2], [joint3], [joint4]])
 
 # Generate time vector
 timeVector = np.linspace(0, 1, timeSteps)
@@ -417,11 +418,14 @@ spline_joint1 = CubicSpline(
     [0, 1], [start_positions[1, 0], end_positions[1, 0]])
 spline_joint2 = CubicSpline(
     [0, 1], [start_positions[2, 0], end_positions[2, 0]])
+spline_joint3 = CubicSpline(
+    [0, 1], [start_positions[3, 0], end_positions[3, 0]])
 
 # Evaluate the splines at each time step
 trajectory_joint0 = spline_joint0(timeVector)
 trajectory_joint1 = spline_joint1(timeVector)
 trajectory_joint2 = spline_joint2(timeVector)
+trajectory_joint3 = spline_joint3(timeVector)
 
 '''
 # -------------------------------------sinusoidal trajectory generation----------------------
@@ -443,14 +447,15 @@ trajectory_joint2 = spline_joint2(timeVector)
 '''
 # Stack the individual trajectories to form the desired trajectory matrix
 desiredTrajectory = np.matrix(np.column_stack(
-    (trajectory_joint0, trajectory_joint1, trajectory_joint2)))
+    (trajectory_joint0, trajectory_joint1, trajectory_joint2, trajectory_joint3)))
 
 # print(desiredTrajectory[:, 0])
 
 # # Plot the cubic spline trajectories
-plt.plot(trajectory_joint0, label='Joint 0')
-plt.plot(trajectory_joint1, label='Joint 1')
-plt.plot(trajectory_joint2, label='Joint 2')
+plt.plot(trajectory_joint0, label='Joint 1')
+plt.plot(trajectory_joint1, label='Joint 2')
+plt.plot(trajectory_joint2, label='Joint 3')
+plt.plot(trajectory_joint3, label='Joint 4')
 plt.xlabel('TimeSteps')
 plt.ylabel('Joint Angles')
 plt.legend()
@@ -468,9 +473,11 @@ plt.show()
 x0test = np.matrix([[theta[0]],
                     [theta[1]],
                     [theta[2]],
+                    [theta[3]],
                     [dtheta[0]],
                     [dtheta[1]],
-                    [dtheta[2]]])
+                    [dtheta[2]],
+                    [dtheta[3]]])
 x0 = x0test
 
 # print(x0)
@@ -504,112 +511,35 @@ for j in range(timeSteps):
 desiredTrajectoryList1 = []
 desiredTrajectoryList2 = []
 desiredTrajectoryList3 = []
+desiredTrajectoryList4 = []
 controlledTrajectoryList1 = []
 controlledTrajectoryList2 = []
 controlledTrajectoryList3 = []
+controlledTrajectoryList4 = []
 controlInputList1 = []
 controlInputList2 = []
 controlInputList3 = []
+controlInputList4 = []
 
 # Append values to lists
 for i in range(timeSteps):
     controlledTrajectoryList1.append(mpc.outputs[i][0, 0])
     controlledTrajectoryList2.append(mpc.outputs[i][1, 0])
     controlledTrajectoryList3.append(mpc.outputs[i][2, 0])
+    controlledTrajectoryList4.append(mpc.outputs[i][3, 0])
     controlInputList1.append(mpc.inputs[i][0, 0])
     controlInputList2.append(mpc.inputs[i][1, 0])
     controlInputList3.append(mpc.inputs[i][2, 0])
+    controlInputList4.append(mpc.inputs[i][3, 0])
 
 desiredTrajectoryList1 = desiredTrajectory[:, 0]
 desiredTrajectoryList2 = desiredTrajectory[:, 1]
 desiredTrajectoryList3 = desiredTrajectory[:, 2]
+desiredTrajectoryList4 = desiredTrajectory[:, 3]
 
-# -----------------------------starts the arm animation----------------------------------------
+# results visualization
 
-total_time = 2  # seconds
-time_vector = np.linspace(0, total_time, num=timeSteps)
-
-# Iterate over time steps
-
-theta0_sim = np.zeros_like(time_vector)
-theta1_sim = np.zeros_like(time_vector)
-theta2_sim = np.zeros_like(time_vector)
-
-# Create a figure and axis
-fig, ax = plt.subplots()
-ax.set_xlim(-1.5, 1.5)
-ax.set_ylim(-1.5, 1.5)
-
-# Initialize line objects for the links and end effector
-link0, = ax.plot([], [], 'o-', lw=2, label='Link 0')
-link1, = ax.plot([], [], 'o-', lw=2, label='Link 1')
-link2, = ax.plot([], [], 'o-', lw=2, label='Link 2')
-end_effector, = ax.plot([], [], 'o', label='End Effector')
-trajectory_line, = ax.plot([], [], '-', lw=1, color='gray', label='Trajectory')
-
-
-# Function to update the animation
-def update(frame):
-
-    # Set the desired trajectory for the current time step
-
-    # Extract joint angles
-
-    # Access the elements from mpc.states[frame]
-    theta0_sim[frame] = (mpc.states[frame][0, 0])*np.pi/180
-    theta1_sim[frame] = ((mpc.states[frame][1, 0])*np.pi/180)  # -(np.pi/2)
-    theta2_sim[frame] = (mpc.states[frame][2, 0])*np.pi/180
-
-    # print(frame,theta0_sim[frame],theta1_sim[frame],theta2_sim[frame])
-
-    # Update the positions of the links and end effector
-    x0, y0 = 0, 0
-    x1 = L1 * np.cos(theta0_sim[frame])
-    y1 = L1 * np.sin(theta0_sim[frame])
-    x2 = x1+L2 * np.cos(theta0_sim[frame] + theta1_sim[frame])
-    y2 = y1+L2 * np.sin(theta0_sim[frame] + theta1_sim[frame])
-    x3 = x2+L3 * np.cos(theta0_sim[frame] +
-                        theta1_sim[frame] + theta2_sim[frame])
-    y3 = y2+L3 * np.sin(theta0_sim[frame] +
-                        theta1_sim[frame] + theta2_sim[frame])
-
-    # ----------derived forward kinematics--------------------------
-    # x1 = L2 * np.cos(theta1_sim[frame])
-    # y1 = L2 * np.sin(theta1_sim[frame])
-    # x2 = L3 * np.cos(theta2_sim[frame])
-    # y2 = L3 * np.sin(theta2_sim[frame])
-    # x3 = L2*np.cos(theta0_sim[frame])*np.cos(theta1_sim[frame]) + L3*np.cos(
-    #     theta0_sim[frame])*np.cos(theta1_sim[frame]+theta2_sim[frame])
-    # y3 = L2*np.cos(theta1_sim[frame])*np.sin(theta0_sim[frame]) + L3*np.sin(
-    #     theta1_sim[frame])*np.cos(theta1_sim[frame]+theta2_sim[frame])
-
-    link0.set_data([x0, x1], [y0, y1])
-    link1.set_data([x1, x2], [y1, y2])
-    link2.set_data([x2, x3], [y2, y3])
-    end_effector.set_data(x3, y3)
-
-    # Initialize end_effector_path as a global variable
-    global end_effector_path
-    # Update the trajectory line
-    end_effector_path.append((x3, y3))
-    trajectory_line.set_data(*zip(*end_effector_path))
-
-
-# Initialize end_effector_path
-end_effector_path = []
-
-# Create an animation
-# animation = FuncAnimation(fig, update, frames=range(
-#     timeSteps), interval=100, blit=False, repeat=False)
-
-
-# animation.save('robotic_arm_animation.gif', writer='imagemagick')
-
-# Show the plot
-# plt.legend()
-# plt.show()
-
-fig, axs = plt.subplots(2, 3)
+fig, axs = plt.subplots(2, 4)
 axs[0, 0].plot(desiredTrajectoryList1, linewidth=4,
                label='Desired trajectory1')
 axs[0, 0].plot(controlledTrajectoryList1, linewidth=3,
@@ -634,6 +564,13 @@ axs[0, 2].set_title('JOINT 3')
 axs[0, 2].legend()
 # ---------------------------------------------------------------
 
+axs[0, 3].plot(desiredTrajectoryList4, linewidth=4,
+               label='Desired trajectory4')
+axs[0, 3].plot(controlledTrajectoryList4, linewidth=3,
+               label='Controlled trajectory4')
+axs[0, 3].set_title('JOINT 4')
+axs[0, 3].legend()
+
 axs[1, 0].plot(controlInputList1, linewidth=4,
                label='Control Torque1')
 axs[1, 0].set_title('Torque of Joint1')
@@ -644,12 +581,16 @@ axs[1, 1].set_title('Torque of Joint2')
 axs[1, 1].legend()
 axs[1, 2].plot(controlInputList3, linewidth=4,
                label='Control Torque3')
-axs[1, 2].set_title('Torque of Joint3')
-axs[1, 2].legend()
+axs[1, 3].set_title('Torque of Joint4')
+axs[1, 3].legend()
+axs[1, 3].plot(controlInputList4, linewidth=4,
+               label='Control Torque4')
+axs[1, 3].set_title('Torque of Joint4')
+axs[1, 3].legend()
 
-# plt.show()
+plt.show()
 
-
+'''
 for i in range(timeSteps):
 
     sim.setJointTargetPosition(joint1, mpc.outputs[i][0, 0]*(np.pi/180))
@@ -667,3 +608,4 @@ def get_ang():
 
 
 get_ang()
+'''
