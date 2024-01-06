@@ -398,7 +398,7 @@ for i in range(f):
 
 
 # desired trajectory generation
-timeSteps = 200
+timeSteps = 150
 
 # ------------------simple trajectory--------------------------------
 # xd, yd, zd = invK(0.4, 0.2, 0, 0, 90, 0)
@@ -452,10 +452,10 @@ desiredTrajectory = np.matrix(np.column_stack(
 # print(desiredTrajectory[:, 0])
 
 # # Plot the cubic spline trajectories
-plt.plot(trajectory_joint0, label='Joint 1')
-plt.plot(trajectory_joint1, label='Joint 2')
-plt.plot(trajectory_joint2, label='Joint 3')
-plt.plot(trajectory_joint3, label='Joint 4')
+plt.plot(trajectory_joint0, linewidth=4, label='Joint 1')
+plt.plot(trajectory_joint1, linewidth=4, label='Joint 2')
+plt.plot(trajectory_joint2, linewidth=4, label='Joint 3')
+plt.plot(trajectory_joint3, linewidth=4, label='Joint 4')
 plt.xlabel('TimeSteps')
 plt.ylabel('Joint Angles')
 plt.legend()
@@ -540,50 +540,50 @@ desiredTrajectoryList4 = desiredTrajectory[:, 3]
 # results visualization
 
 fig, axs = plt.subplots(2, 4)
-axs[0, 0].plot(desiredTrajectoryList1, linewidth=4,
+axs[0, 0].plot(desiredTrajectoryList1, linewidth=4, color='black',
                label='Desired trajectory1')
-axs[0, 0].plot(controlledTrajectoryList1, linewidth=3,
+axs[0, 0].plot(controlledTrajectoryList1, linewidth=3, linestyle='dashed', color='black',
                label='Controlled trajectory1')
 axs[0, 0].set_title('JOINT 1')
 axs[0, 0].legend()
 # -------------------------------------------------------------
 
-axs[0, 1].plot(desiredTrajectoryList2, linewidth=4,
+axs[0, 1].plot(desiredTrajectoryList2, linewidth=4, color='black',
                label='Desired trajectory2')
-axs[0, 1].plot(controlledTrajectoryList2, linewidth=3,
+axs[0, 1].plot(controlledTrajectoryList2, linewidth=3, linestyle='dashed', color='black',
                label='Controlled trajectory2')
 axs[0, 1].set_title('JOINT 2')
 axs[0, 1].legend()
 # ---------------------------------------------------------------
 
-axs[0, 2].plot(desiredTrajectoryList3, linewidth=4,
+axs[0, 2].plot(desiredTrajectoryList3, linewidth=4, color='black',
                label='Desired trajectory3')
-axs[0, 2].plot(controlledTrajectoryList3, linewidth=3,
+axs[0, 2].plot(controlledTrajectoryList3, linewidth=3, linestyle='dashed', color='black',
                label='Controlled trajectory3')
 axs[0, 2].set_title('JOINT 3')
 axs[0, 2].legend()
 # ---------------------------------------------------------------
 
-axs[0, 3].plot(desiredTrajectoryList4, linewidth=4,
+axs[0, 3].plot(desiredTrajectoryList4, linewidth=4, color='black',
                label='Desired trajectory4')
-axs[0, 3].plot(controlledTrajectoryList4, linewidth=3,
+axs[0, 3].plot(controlledTrajectoryList4, linewidth=3, linestyle='dashed', color='black',
                label='Controlled trajectory4')
 axs[0, 3].set_title('JOINT 4')
 axs[0, 3].legend()
 
-axs[1, 0].plot(controlInputList1, linewidth=4,
+axs[1, 0].plot(controlInputList1, linewidth=4, color='black',
                label='Control Torque1')
 axs[1, 0].set_title('Torque of Joint1')
 axs[1, 0].legend()
-axs[1, 1].plot(controlInputList2, linewidth=4,
+axs[1, 1].plot(controlInputList2, linewidth=4, color='black',
                label='Control Torque2')
 axs[1, 1].set_title('Torque of Joint2')
 axs[1, 1].legend()
-axs[1, 2].plot(controlInputList3, linewidth=4,
+axs[1, 2].plot(controlInputList3, linewidth=4, color='black',
                label='Control Torque3')
-axs[1, 3].set_title('Torque of Joint4')
-axs[1, 3].legend()
-axs[1, 3].plot(controlInputList4, linewidth=4,
+axs[1, 2].set_title('Torque of Joint3')
+axs[1, 2].legend()
+axs[1, 3].plot(controlInputList4, linewidth=4, color='black',
                label='Control Torque4')
 axs[1, 3].set_title('Torque of Joint4')
 axs[1, 3].legend()
