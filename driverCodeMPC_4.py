@@ -11,7 +11,7 @@ from ModelPredictiveControl_4 import ModelPredictiveControl
 import time
 from scipy.integrate import odeint
 
-
+'''
 # copelia sim here-----------------------------
 client = RemoteAPIClient()
 
@@ -39,7 +39,7 @@ sim.setJointTargetPosition(joint1, 0)
 sim.setJointTargetPosition(joint2, 0)
 sim.setJointTargetPosition(joint3, 0)
 sim.setJointTargetPosition(joint4, 0)
-
+'''
 
 ###############################################################################
 #  Define the MPC algorithm parameters
@@ -278,18 +278,18 @@ def Cor_mat(theta1, theta2, theta3, theta4, theta1_d, theta2_d, theta3_d, theta4
 # -----------------------------------------------------------------------
 
 
-def Gra_mat(theta1, theta2):
-    # gravity vectors for 3DOF robotic arm
-    g1 = 0
-    g2 = m2 * g * l2 * cos(theta1) + m3 * g * L2 * cos(theta1) + \
-        m3 * g * l3 * cos(theta1 + theta2)
-    g3 = m3 * g * l3 * cos(theta1 + theta2)
+# def Gra_mat(theta1, theta2):
+#     # gravity vectors for 3DOF robotic arm
+#     g1 = 0
+#     g2 = m2 * g * l2 * cos(theta1) + m3 * g * L2 * cos(theta1) + \
+#         m3 * g * l3 * cos(theta1 + theta2)
+#     g3 = m3 * g * l3 * cos(theta1 + theta2)
 
-    # ----------------------------------------------------------------------------
-    Gra = np.matrix([[g1],
-                     [g2],
-                     [g3]])
-    return Gra
+#     # ----------------------------------------------------------------------------
+#     Gra = np.matrix([[g1],
+#                      [g2],
+#                      [g3]])
+#     return Gra
 
 
 # ----------------------------------------------------------------------------

@@ -103,110 +103,231 @@ class ModelPredictiveControl(object):
 
     # ---------------------------------------------------Matrices--------------------------------------------------
 
-    def D_mat(self, theta0, theta1, theta2):
+    def D_mat(self, theta0, theta1, theta2, theta3):
 
-        d11 = self.Iz1 + self.Iz2 + self.Iz3 + \
-            self.L2 ** 2 * self.m2 * cos(theta1) ** 2
-        + self.m3 * cos(theta0) ** 2 * (self.L3 * cos(theta1 +
-                                                      theta2) + self.L2 * cos(theta1)) ** 2
-        + self.m3 * sin(theta0) ** 2 * (self.L3 * cos(theta1 +
-                                                      theta2) + self.L2 * cos(theta1)) ** 2
+        # theta starts from 0 in this matrix
+
+        d11 = self.Iz1 + self.Iz2 + self.Iz3 + self.Iz4 + self.m4*pow(cos(theta0), 2)*(self.L3*sin(theta1 + theta2) + self.L2*sin(theta1)
+                                                                                       - self.L4*cos(theta1 + theta2 + theta3)) ^ 2 + self.L2 ^ 2*self.m2*sin(theta1) ^ 2 + self.m4*sin(theta0) ^ 2*(self.L3*sin(
+                                                                                           theta1 + theta2) + self.L2*sin(theta1) - self.L4*cos(theta1 + theta2 + theta3)) ^ 2
+        + self.m3*cos(theta0) ^ 2*(self.L3*sin(theta1 + theta2) + self.L2*sin(theta1)) ^ 2 + \
+            self.m3*sin(theta0) ^ 2*(self.L3*sin(theta1 +
+                                                 theta2) + self.L2*sin(theta1)) ^ 2
 
         d12 = 0
         d13 = 0
+        d14 = 0
         d21 = 0
-        d22 = self.Ix2 + self.Ix3 + self.L2 ** 2 * self.m2 + self.L2 ** 2 * self.m3 + self.L3 ** 2 * self.m3 - self.Ix2 * cos(
-            theta0) ** 2 - self.Ix3 * cos(
-            theta0) ** 2 + self.Iy2 * cos(theta0) ** 2 + self.Iy3 * cos(
-            theta0) ** 2 + 2 * self.L2 * self.L3 * self.m3 * cos(theta2)
+        d22 = self.Ix3 + self.Ix4/2 + self.Iy2 + self.Iy4/2 + self.L2 ^ 2*self.m2 + self.L2 ^ 2*self.m3 + self.L2 ^ 2 * \
+            self.m4 + self.L3 ^ 2*self.m3 + self.L3 ^ 2*self.m4 + \
+            self.L4 ^ 2*self.m4 - (self.Ix4*cos(2*theta0))/2
+        + (self.Iy4*cos(2*theta0))/2 - self.Ix3*cos(theta0) ^ 2 + \
+            self.Iy3*cos(theta0) ^ 2 + self.Ix2*sin(theta0) ^ 2
+        - self.Iy2*sin(theta0) ^ 2 + 2*self.L2*self.L4*self.m4 * \
+            sin(theta2 + theta3) + 2*self.L2*self.L3*self.m3*cos(theta2)
+        + 2*self.L2*self.L3*self.m4 * \
+            cos(theta2) + 2*self.L3*self.L4*self.m4*sin(theta3)
 
-        d23 = self.Ix3 + self.L3 ** 2 * self.m3 - self.Ix3 * \
-            cos(theta0) ** 2 + self.Iy3 * cos(theta0) ** 2 + \
-            self.L2 * self.L3 * self.m3 * cos(theta2)
+        d23 = self.Ix3 + self.Ix4/2 + self.Iy4/2 + self.L3 ^ 2*self.m3 + self.L3 ^ 2*self.m4 + self.L4 ^ 2 * \
+            self.m4 - (self.Ix4*cos(2*theta0))/2 + (self.Iy4*cos(2*theta0))/2
+        - self.Ix3*cos(theta0) ^ 2 + self.Iy3*cos(theta0) ^ 2 + self.L2*self.L4 * \
+            self.m4*sin(theta2 + theta3) + self.L2*self.L3*self.m3*cos(theta2)
+        + self.L2*self.L3*self.m4*cos(theta2) + \
+            2*self.L3*self.L4*self.m4*sin(theta3)
+
+        d24 = self.Ix4/2 + self.Iy4/2 + self.L4 ^ 2 * \
+            self.m4 - (self.Ix4*cos(2*theta0))/2
+        + (self.Iy4*cos(2*theta0))/2 + self.L2*self.L4*self.m4 * \
+            sin(theta2 + theta3) + self.L3*self.L4*self.m4*sin(theta3)
 
         d31 = 0
-        d32 = self.Ix3 + self.L3 ** 2 * self.m3 - self.Ix3 * \
-            cos(theta0) ** 2 + self.Iy3 * cos(theta0) ** 2 + \
-            self.L2 * self.L3 * self.m3 * cos(theta2)
-        d33 = self.Iy3 + self.L3 ** 2 * self.m3 + self.Ix3 * \
-            sin(theta0) ** 2 - self.Iy3 * sin(theta0) ** 2
+        d32 = self.Ix3 + self.Ix4/2 + self.Iy4/2 + self.L3 ^ 2*self.m3 + self.L3 ^ 2 * \
+            self.m4 + self.L4 ^ 2*self.m4 - (self.Ix4*cos(2*theta0))/2
+        + (self.Iy4*cos(2*theta0))/2 - self.Ix3*cos(theta0) ^ 2 + self.Iy3 * \
+            cos(theta0) ^ 2 + self.L2*self.L4*self.m4*sin(theta2 + theta3)
+        + self.L2*self.L3*self.m3*cos(theta2) + self.L2*self.L3 * \
+            self.m4*cos(theta2) + 2*self.L3*self.L4*self.m4*sin(theta3)
+        d33 = self.Iy3 + self.Iy4 + self.L3 ^ 2*self.m3 + self.L3 ^ 2*self.m4 + self.L4 ^ 2 * \
+            self.m4 + self.Ix3*sin(theta0) ^ 2 + self.Ix4*sin(theta0) ^ 2
+        - self.Iy3*sin(theta0) ^ 2 - self.Iy4*sin(theta0) ^ 2 + \
+            2*self.L3*self.L4*self.m4*sin(theta3)
+
+        d34 = self.Iy4 + self.L4 ^ 2*self.m4 + self.Ix4 * \
+            sin(theta0) ^ 2 - self.Iy4*sin(theta0) ^ 2 + \
+            self.L3*self.L4*self.m4*sin(theta3)
+
+        d41 = 0
+        d42 = self.Ix4/2 + self.Iy4/2 + self.L4 ^ 2*self.m4 - \
+            (self.Ix4*cos(2*theta0))/2 + (self.Iy4*cos(2*theta0))/2
+        + self.L2*self.L4*self.m4*sin(theta2 + theta3) + \
+            self.L3*self.L4*self.m4*sin(theta3)
+        d43 = self.Iy4 + self.L4 ^ 2*self.m4 + self.Ix4 * \
+            sin(theta0) ^ 2 - self.Iy4*sin(theta0) ^ 2 + \
+            self.L3*self.L4*self.m4*sin(theta3)
+        d44 = self.Iy4 + self.L4 ^ 2*self.m4 + self.Ix4 * \
+            sin(theta0) ^ 2 - self.Iy4*sin(theta0) ^ 2
 
         # ------------------------------------------------------------------------------------
 
-        D = np.matrix([[d11, d12, d13],
-                       [d21, d22, d23],
-                       [d31, d32, d33]])
+        D = np.matrix([[d11, d12, d13, d14],
+                       [d21, d22, d23, d24],
+                       [d31, d32, d33, d34],
+                       [d41, d42, d43, d44]])
         return D.round(decimals=5)
 
-    def Cor_mat(self, theta0, theta1, theta2, dtheta0, dtheta1, dtheta2):
+    def Cor_mat(self, theta1, theta2, theta3, theta4, theta1_d, theta2_d, theta3_d, theta4_d):
+
+        # theta starts from 1 in this matrix...
         # Coriolis matrix components
 
-        c11 = - dtheta1 * ((self.L3 ** 2 * self.m3 * sin(2 * theta1 + 2 * theta2)) / 2 + (
-            self.L2 ** 2 * self.m2 * sin(2 * theta1)) / 2 + (
-            self.L2 ** 2 * self.m3 * sin(2 * theta1)) / 2 + self.L2 *
-            self.L3 * self.m3 * sin(2 * theta1 + theta2)) - (self.L3 * self.m3 * dtheta2 * (
-                self.L3 * sin(2 * theta1 + 2 * theta2) + self.L2 * sin(theta2) + self.L2 * sin(
-                    2 * theta1 + theta2))) / 2
+        c11 = theta3_d*((self.L3 ^ 2*self.m3*sin(2*theta2 + 2*theta3))/2 + (self.L3 ^ 2*self.m4*sin(2*theta2 + 2*theta3))/2
+                        - (self.L4 ^ 2*self.m4*sin(2*theta2 + 2*theta3 + 2*theta4)) /
+                        2 - (self.L2*self.L4*self.m4 *
+                             cos(2*theta2 + theta3 + theta4))/2
+                        + (self.L2*self.L4*self.m4*cos(theta3 + theta4))/2 - self.L3 *
+                        self.L4*self.m4*cos(2*theta2 + 2*theta3 + theta4)
+                        - (self.L2*self.L3*self.m3*sin(theta3))/2 - (self.L2*self.L3*self.m4*sin(theta3)) /
+                        2 + (self.L2*self.L3*self.m3*sin(2*theta2 + theta3))/2
+                        + (self.L2*self.L3*self.m4*sin(2*theta2 + theta3))/2) + theta2_d*((self.L3 ^ 2*self.m3*sin(2*theta2 + 2*theta3))/2
+                                                                                          + (self.L3 ^ 2*self.m4*sin(2*theta2 + 2*theta3))/2 + (
+                            self.L2 ^ 2*self.m2*sin(2*theta2))/2 + (self.L2 ^ 2*self.m3*sin(2*theta2))/2
+            + (self.L2 ^ 2*self.m4*sin(2*theta2))/2 - (self.L4 ^ 2*self.m4*sin(2*theta2 + 2 *
+                                                                               theta3 + 2*theta4))/2 - self.L2*self.L4*self.m4*cos(2*theta2 + theta3 + theta4)
+            - self.L3*self.L4*self.m4*cos(2*theta2 + 2*theta3 + theta4) + self.L2*self.L3*self.m3*sin(2*theta2 + theta3) + self.L2*self.L3*self.m4*sin(2*theta2 + theta3))
+        + self.L4*self.m4*theta4_d*sin(theta2 + theta3 + theta4)*(self.L3*sin(theta2 +
+                                                                              theta3) + self.L2*sin(theta2) - self.L4*cos(theta2 + theta3 + theta4))
 
-        c12 = - dtheta0 * ((self.L3 ** 2 * self.m3 * sin(2 * theta1 + 2 * theta2)) / 2 + (
-            self.L2 ** 2 * self.m2 * sin(2 * theta1)) / 2 + (
-            self.L2 ** 2 * self.m3 * sin(2 * theta1)) / 2 + self.L2 *
-            self.L3 * self.m3 * sin(2 * theta1 + theta2)) - (
-            dtheta1 * sin(2 * theta0) * (self.Ix2 + self.Ix3 - self.Iy2 - self.Iy3)) / 2 - (
-            dtheta2 * sin(2 * theta0) * (self.Ix3 - self.Iy3)) / 2
+        c12 = theta1_d*((self.L3 ^ 2*self.m3*sin(2*theta2 + 2*theta3))/2 + (self.L3 ^ 2*self.m4*sin(2*theta2 + 2*theta3))/2 + (self.L2 ^ 2*self.m2*sin(2*theta2))/2
+                        + (self.L2 ^ 2*self.m3*sin(2*theta2))/2 + (self.L2 ^ 2*self.m4*sin(2*theta2)) /
+                        2 - (self.L4 ^ 2*self.m4 *
+                             sin(2*theta2 + 2*theta3 + 2*theta4))/2
+                        - self.L2*self.L4*self.m4*cos(2*theta2 + theta3 + theta4) -
+                        self.L3*self.L4*self.m4 *
+                        cos(2*theta2 + 2*theta3 + theta4)
+                        + self.L2*self.L3*self.m3*sin(2*theta2 + theta3) + self.L2*self.L3*self.m4*sin(2*theta2 + theta3)) - (theta2_d*sin(2*theta1)*(self.Ix2 + self.Ix3 + self.Ix4 - self.Iy2 - self.Iy3 - self.Iy4))/2
+        - (theta3_d*sin(2*theta1)*(self.Ix3 + self.Ix4 - self.Iy3 - self.Iy4)) / \
+            2 - (theta4_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2
 
-        c13 = - (dtheta1 * sin(2 * theta0) * (self.Ix3 - self.Iy3)) / 2 - (
-            dtheta2 * sin(2 * theta0) * (self.Ix3 - self.Iy3)) / 2 - \
-            (self.L3 * self.m3 * dtheta0 * (self.L3 * sin(2 * theta1 + 2 * theta2) +
-                                            self.L2 * sin(theta2) + self.L2 * sin(2 * theta1 + theta2))) / 2
+        c13 = theta1_d*((self.L3 ^ 2*self.m3*sin(2*theta2 + 2*theta3))/2 + (self.L3 ^ 2*self.m4*sin(2*theta2 + 2*theta3))/2
+                        - (self.L4 ^ 2*self.m4*sin(2*theta2 + 2*theta3 + 2*theta4)) /
+                        2 - (self.L2*self.L4*self.m4 *
+                             cos(2*theta2 + theta3 + theta4))/2
+                        + (self.L2*self.L4*self.m4*cos(theta3 + theta4))/2 - self.L3 *
+                        self.L4*self.m4*cos(2*theta2 + 2*theta3 + theta4)
+                        - (self.L2*self.L3*self.m3*sin(theta3))/2 - (self.L2*self.L3*self.m4*sin(theta3)) /
+                        2 + (self.L2*self.L3*self.m3*sin(2*theta2 + theta3))/2
+                        + (self.L2*self.L3*self.m4*sin(2*theta2 + theta3))/2) - (theta2_d*sin(2*theta1)*(self.Ix3 + self.Ix4 - self.Iy3 - self.Iy4))/2
+        - (theta3_d*sin(2*theta1)*(self.Ix3 + self.Ix4 - self.Iy3 - self.Iy4)) / \
+            2 - (theta4_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2
 
-        c21 = dtheta0 * ((self.L3 ** 2 * self.m3 * sin(2 * theta1 + 2 * theta2)) / 2 + (
-            self.L2 ** 2 * self.m2 * sin(2 * theta1)) / 2 + (
-            self.L2 ** 2 * self.m3 * sin(2 * theta1)) / 2 + self.L2 *
-            self.L3 * self.m3 * sin(2 * theta1 + theta2)) + (
-            dtheta1 * sin(2 * theta0) * (self.Ix2 + self.Ix3 - self.Iy2 - self.Iy3)) / 2 + (
-            dtheta2 * sin(2 * theta0) * (self.Ix3 - self.Iy3)) / 2
+        c14 = self.L4*self.m4*theta1_d*sin(theta2 + theta3 + theta4)*(
+            self.L3*sin(theta2 + theta3) + self.L2*sin(theta2) - self.L4*cos(theta2 + theta3 + theta4))
+        - (theta3_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2 - (theta4_d*sin(2*theta1)
+                                                              * (self.Ix4 - self.Iy4))/2 - (theta2_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2
 
-        c22 = (dtheta0 * sin(2 * theta0) * (self.Ix2 + self.Ix3 - self.Iy2 - self.Iy3)) / \
-            2 - self.L2 * self.L3 * self.m3 * dtheta2 * sin(theta2)
-        c23 = (dtheta0 * sin(2 * theta0) * (self.Ix3 - self.Iy3)) / 2 - self.L2 * self.L3 * self.m3 * \
-            dtheta1 * sin(theta2) - self.L2 * self.L3 * \
-            self.m3 * dtheta2 * sin(theta2)
+        c21 = (theta2_d*sin(2*theta1)*(self.Ix2 + self.Ix3 + self.Ix4 - self.Iy2 - self.Iy3 - self.Iy4))/2 - theta1_d*((self.L3 ^ 2*self.m3*sin(2*theta2 + 2*theta3))/2
+                                                                                                                       + (self.L3 ^ 2*self.m4*sin(2*theta2 + 2*theta3))/2
+                                                                                                                       + (self.L2 ^ 2*self.m2*sin(2*theta2))/2
+                                                                                                                       + (self.L2 ^ 2*self.m3*sin(2*theta2))/2
+                                                                                                                       + (self.L2 ^ 2*self.m4*sin(2*theta2))/2
+                                                                                                                       - (self.L4 ^ 2*self.m4*sin(2*theta2 + 2*theta3 + 2*theta4))/2
+                                                                                                                       - self.L2*self.L4*self.m4 *
+                                                                                                                       cos(
+            2*theta2 + theta3 + theta4)
+            - self.L3*self.L4*self.m4 *
+            cos(
+            2*theta2 + 2*theta3 + theta4)
+            + self.L2*self.L3*self.m3*sin(2*theta2 + theta3) + self.L2*self.L3*self.m4*sin(2*theta2 + theta3))
+        + (theta3_d*sin(2*theta1)*(self.Ix3 + self.Ix4 - self.Iy3 - self.Iy4)) / \
+            2 + (theta4_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2
 
-        c31 = (dtheta1 * sin(2 * theta0) * (self.Ix3 - self.Iy3)) / 2 + (
-            dtheta2 * sin(2 * theta0) * (self.Ix3 - self.Iy3)) / 2 + \
-            (self.L3 * self.m3 * dtheta0 * (self.L3 * sin(2 * theta1 + 2 * theta2) +
-                                            self.L2 * sin(theta2) + self.L2 * sin(2 * theta1 + theta2))) / 2
+        c22 = (theta1_d*sin(2*theta1)*(self.Ix2 + self.Ix3 + self.Ix4 - self.Iy2 - self.Iy3 - self.Iy4))/2 - self.L2*theta3_d*(self.L3*self.m3*sin(theta3) + self.L3*self.m4*sin(theta3)
+                                                                                                                               - self.L4*self.m4*cos(theta3 + theta4))
+        + self.L4*self.m4*theta4_d * \
+            (self.L2*cos(theta3 + theta4) + self.L3*cos(theta4))
 
-        c32 = (dtheta0 * sin(2 * theta0) * (self.Ix3 - self.Iy3)) / \
-            2 + self.L2 * self.L3 * self.m3 * dtheta1 * sin(theta2)
-        c33 = (dtheta0 * sin(2 * theta0) * (self.Ix3 - self.Iy3)) / 2
+        c23 = (theta1_d*sin(2*theta1)*(self.Ix3 + self.Ix4 - self.Iy3 - self.Iy4))/2 - self.L2*theta2_d*(self.L3*self.m3*sin(theta3) + self.L3*self.m4*sin(theta3)
+                                                                                                         - self.L4*self.m4*cos(theta3 + theta4)) - self.L2*theta3_d*(self.L3*self.m3*sin(theta3) + self.L3*self.m4*sin(theta3)
+                                                                                                                                                                     - self.L4*self.m4*cos(theta3 + theta4))
+        + self.L4*self.m4*theta4_d * \
+            (self.L2*cos(theta3 + theta4) + self.L3*cos(theta4))
 
+        c24 = (theta1_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2 + self.L4*self.m4*theta2_d*(self.L2*cos(theta3 + theta4)
+                                                                                           + self.L3*cos(theta4)) + self.L4*self.m4*theta3_d*(self.L2*cos(theta3 + theta4)
+                                                                                                                                              + self.L3*cos(theta4)) + self.L4*self.m4*theta4_d*(self.L2*cos(theta3 + theta4)
+                                                                                                                                                                                                 + self.L3*cos(theta4))
+
+        c31 = (theta2_d*sin(2*theta1)*(self.Ix3 + self.Ix4 - self.Iy3 - self.Iy4))/2 - theta1_d*((self.L3 ^ 2*self.m3*sin(2*theta2 + 2*theta3))/2
+                                                                                                 + (self.L3 ^ 2*self.m4*sin(2*theta2 + 2*theta3))/2
+                                                                                                 - (self.L4 ^ 2*self.m4*sin(2*theta2 + 2*theta3 + 2*theta4))/2
+                                                                                                 - (self.L2*self.L4*self.m4*cos(2*theta2 + theta3 + theta4))/2
+                                                                                                 + (self.L2*self.L4*self.m4*cos(theta3 + theta4))/2
+                                                                                                 - self.L3*self.L4*self.m4 *
+                                                                                                 cos(2*theta2 + 2 *
+                                                                                                     theta3 + theta4)
+                                                                                                 - (self.L2*self.L3*self.m3*sin(theta3))/2
+                                                                                                 - (self.L2*self.L3*self.m4*sin(theta3))/2 + (
+            self.L2*self.L3*self.m3*sin(2*theta2 + theta3))/2
+            + (self.L2*self.L3*self.m4*sin(2*theta2 + theta3))/2) + (theta3_d*sin(2*theta1)*(self.Ix3 + self.Ix4 - self.Iy3 - self.Iy4))/2 + (theta4_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2
+
+        c32 = (theta1_d*sin(2*theta1)*(self.Ix3 + self.Ix4 - self.Iy3 - self.Iy4))/2 + self.L2*theta2_d*(self.L3*self.m3*sin(theta3) + self.L3*self.m4*sin(theta3)
+                                                                                                         - self.L4*self.m4*cos(theta3 + theta4)) + self.L3*self.L4*self.m4*theta4_d*cos(theta4)
+
+        c33 = (theta1_d*sin(2*theta1)*(self.Ix3 + self.Ix4 - self.Iy3 - self.Iy4)) / \
+            2 + self.L3*self.L4*self.m4*theta4_d*cos(theta4)
+
+        c34 = (theta1_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2 + self.L3*self.L4*self.m4*theta2_d * \
+            cos(theta4) + self.L3*self.L4*self.m4*theta3_d * \
+            cos(theta4) + self.L3*self.L4*self.m4*theta4_d*cos(theta4)
+
+        c41 = (theta2_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2 + \
+            (theta3_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2
+        + (theta4_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2 - self.L4*self.m4*theta1_d*sin(theta2 + theta3 + theta4)*(self.L3*sin(theta2 + theta3)
+                                                                                                                     + self.L2 *
+                                                                                                                     sin(
+            theta2)
+            - self.L4*cos(theta2 + theta3 + theta4))
+
+        c42 = (theta1_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2 - self.L4*self.m4*theta2_d*(self.L2 *
+                                                                                           cos(theta3 + theta4) + self.L3*cos(theta4)) - self.L3*self.L4*self.m4*theta3_d*cos(theta4)
+
+        c43 = (theta1_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2 - self.L3*self.L4*self.m4 * \
+            theta2_d*cos(theta4) - self.L3*self.L4*self.m4*theta3_d*cos(theta4)
+
+        c44 = (theta1_d*sin(2*theta1)*(self.Ix4 - self.Iy4))/2
         # ---------------------------------------------------------------------
 
-        Cor = np.matrix([[c11, c12, c13],
-                         [c21, c22, c23],
-                         [c31, c32, c33]])
+        Cor = np.matrix([[c11, c12, c13, c14],
+                        [c21, c22, c23, c24],
+                        [c31, c32, c33, c34],
+                        [c41, c42, c43, c44]])
         return Cor.round(decimals=5)
 
-    def Gra_mat(self, theta1, theta2):
+    def Gra_mat(self, theta2, theta3, theta4):
         # gravity vectors for 3DOF robotic arm
+        # theta starts from 1
         g1 = 0
-        g2 = self.m2 * self.g * self.l2 * cos(theta1) + self.m3 * self.g * self.L2 * cos(theta1) + \
-            self.m3 * self.g * self.l3 * cos(theta1 + theta2)
-        g3 = self.m3 * self.g * self.l3 * cos(theta1 + theta2)
 
+        g2 = self.m2*self.g*self.l2*cos(theta2)+self.m3*self.g*self.L2*cos(theta2) + self.m4*self.g*self.l3*cos(
+            theta2+theta3)+self.m4*self.g*self.L2*cos(theta2)+self.m4*self.g*self.L3*cos(theta2+theta3)
+        +self.m4*self.g*self.l4*cos(theta2+theta3+theta4)
+
+        g3 = self.m3*self.g*self.l3*cos(theta2+theta3)+self.m4*self.g*self.L3*cos(
+            theta2+theta3)+self.m4*self.g*self.l4*cos(theta2+theta3+theta4)
+
+        g4 = self.m4*self.g*self.l4*cos(theta2+theta3+theta4)
         # ----------------------------------------------------------------------------
         Gra = np.matrix([[g1],
                          [g2],
-                         [g3]])
+                         [g3],
+                         [g4]])
         return Gra.round(decimals=5)
 
-    def Ainitial_mat(self, theta0, theta1, theta2, dtheta0, dtheta1, dtheta2):
+    def Ainitial_mat(self, theta0, theta1, theta2, theta3, dtheta0, dtheta1, dtheta2, dtheta3):
 
-        Cor = self.Cor_mat(theta0, theta1, theta2,
-                           dtheta0, dtheta1, dtheta2)
-        D = self.D_mat(theta0, theta1, theta2)
+        Cor = self.Cor_mat(theta0, theta1, theta2, theta3,
+                           dtheta0, dtheta1, dtheta2, dtheta3)
+        D = self.D_mat(theta0, theta1, theta2, theta3)
 
         # ------------------------------------State Space modelling starts from here---------------------------------
         Ac = np.matrix(np.zeros((6, 6)))
