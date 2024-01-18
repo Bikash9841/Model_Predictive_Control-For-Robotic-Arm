@@ -11,36 +11,8 @@ from ModelPredictiveControl_4 import ModelPredictiveControl
 import time
 from scipy.integrate import odeint
 from InvKine_GradientDescentOpt import invOpt
+from plots import visualize
 
-'''
-# copelia sim here-----------------------------
-client = RemoteAPIClient()
-
-# all simIK.* type of functions and constants
-simIK = client.getObject('simIK')
-sim = client.getObject('sim')
-simBase = sim.getObject('/base_dyn')
-# simTip = sim.getObject('/base_dyn/tip')
-# simTarget = sim.getObject('/base_dyn/target')
-# sphere = sim.getObject('/base_dyn/manipSphere')
-g_joint1 = sim.getObjectHandle('/base_dyn/gripper_joint1')
-g_joint2 = sim.getObjectHandle('/base_dyn/gripper_joint2')
-# cup_0 = sim.getObjectHandle('/Cup[0]/visible_transparent')
-# cup_1 = sim.getObjectHandle('/Cup[1]/visible_transparent')
-joint1 = sim.getObjectHandle('/base_dyn/joint1')
-joint2 = sim.getObjectHandle('/base_dyn/joint2')
-joint3 = sim.getObjectHandle('/base_dyn/joint3')
-joint4 = sim.getObjectHandle('/base_dyn/joint4')
-
-# to find the homegeneous matrix
-simBase = sim.getObject('/base_dyn')
-# simTip = sim.getObject('/base_dyn/tip')
-
-sim.setJointTargetPosition(joint1, 0)
-sim.setJointTargetPosition(joint2, 0)
-sim.setJointTargetPosition(joint3, 0)
-sim.setJointTargetPosition(joint4, 0)
-'''
 
 ###############################################################################
 #  Define the MPC algorithm parameters
@@ -276,23 +248,6 @@ def Cor_mat(theta1, theta2, theta3, theta4, theta1_d, theta2_d, theta3_d, theta4
     return Cor
 
 
-# -----------------------------------------------------------------------
-
-
-# def Gra_mat(theta1, theta2):
-#     # gravity vectors for 3DOF robotic arm
-#     g1 = 0
-#     g2 = m2 * g * l2 * cos(theta1) + m3 * g * L2 * cos(theta1) + \
-#         m3 * g * l3 * cos(theta1 + theta2)
-#     g3 = m3 * g * l3 * cos(theta1 + theta2)
-
-#     # ----------------------------------------------------------------------------
-#     Gra = np.matrix([[g1],
-#                      [g2],
-#                      [g3]])
-#     return Gra
-
-
 # ----------------------------------------------------------------------------
 
 
@@ -386,8 +341,7 @@ for i in range(f):
 timeSteps = 250
 
 # ------------------simple trajectory--------------------------------
-optimizedJointAngles, _ = invOpt(
-    theta[0], theta[1], theta[2], theta[3], 0.58, -0.58, 0.1)
+optimizedJointAngles, _ = invOpt(0, 0, 0, 0, 0.58, -0.58, 0.1)
 
 print(f"required joint angles: {optimizedJointAngles}")
 print(optimizedJointAngles[0, 0],
@@ -530,87 +484,8 @@ desiredTrajectoryList4 = desiredTrajectory[:, 3]
 
 # results visualization
 
-fig, axs = plt.subplots(2, 4)
-axs[0, 0].plot(desiredTrajectoryList1, linewidth=4, color='black',
-               label='Desired trajectory1')
-axs[0, 0].plot(controlledTrajectoryList1, linewidth=3, linestyle='dashed', color='black',
-               label='Controlled trajectory1')
-axs[0, 0].set_title('JOINT 1')
-axs[0, 0].set_ylabel('Joint Angles (in deg)')
-axs[0, 0].set_xlabel('timesteps')
-axs[0, 0].legend()
-# -------------------------------------------------------------
+visualize(desiredTrajectoryList1, controlledTrajectoryList1, desiredTrajectoryList2, controlledTrajectoryList2,
+          desiredTrajectoryList3, controlledTrajectoryList3, desiredTrajectoryList4, controlledTrajectoryList4,
+          controlInputList1, controlInputList2, controlInputList3, controlInputList4)
 
-axs[0, 1].plot(desiredTrajectoryList2, linewidth=4, color='black',
-               label='Desired trajectory2')
-axs[0, 1].plot(controlledTrajectoryList2, linewidth=3, linestyle='dashed', color='black',
-               label='Controlled trajectory2')
-axs[0, 1].set_title('JOINT 2')
-axs[0, 1].set_xlabel('timesteps')
-axs[0, 1].legend()
-# ---------------------------------------------------------------
-
-axs[0, 2].plot(desiredTrajectoryList3, linewidth=4, color='black',
-               label='Desired trajectory3')
-axs[0, 2].plot(controlledTrajectoryList3, linewidth=3, linestyle='dashed', color='black',
-               label='Controlled trajectory3')
-axs[0, 2].set_title('JOINT 3')
-axs[0, 2].set_ylabel('Joint Angles (in deg)')
-axs[0, 2].set_xlabel('timesteps')
-axs[0, 2].legend()
-# ---------------------------------------------------------------
-
-axs[0, 3].plot(desiredTrajectoryList4, linewidth=4, color='black',
-               label='Desired trajectory4')
-axs[0, 3].plot(controlledTrajectoryList4, linewidth=3, linestyle='dashed', color='black',
-               label='Controlled trajectory4')
-axs[0, 3].set_title('JOINT 4')
-axs[0, 3].set_xlabel('timesteps')
-axs[0, 3].legend()
-
-axs[1, 0].plot(controlInputList1, linewidth=4, color='black',
-               label='Control Torque1')
-axs[1, 0].set_title('Torque of Joint1')
-axs[1, 0].set_ylabel('Torque (Nm)')
-axs[1, 0].set_xlabel('timesteps')
-axs[1, 0].legend()
-
-axs[1, 1].plot(controlInputList2, linewidth=4, color='black',
-               label='Control Torque2')
-axs[1, 1].set_title('Torque of Joint2')
-axs[1, 1].set_xlabel('timesteps')
-axs[1, 1].legend()
-
-axs[1, 2].plot(controlInputList3, linewidth=4, color='black',
-               label='Control Torque3')
-axs[1, 2].set_title('Torque of Joint3')
-axs[1, 2].set_ylabel('Torque (Nm)')
-axs[1, 2].set_xlabel('timesteps')
-axs[1, 2].legend()
-
-axs[1, 3].plot(controlInputList4, linewidth=4, color='black',
-               label='Control Torque4')
-axs[1, 3].set_title('Torque of Joint4')
-axs[1, 3].set_xlabel('timesteps')
-axs[1, 3].legend()
-
-plt.show()
-'''
-for i in range(timeSteps):
-
-    sim.setJointTargetPosition(joint1, mpc.outputs[i][0, 0]*(np.pi/180))
-    sim.setJointTargetPosition(joint2, mpc.outputs[i][1, 0]*(np.pi/180))
-    sim.setJointTargetPosition(joint3, mpc.outputs[i][2, 0]*(np.pi/180))
-    time.sleep(0.01)
-
-
-def get_ang():
-    j1 = sim.getJointPosition(joint1)
-    j2 = sim.getJointPosition(joint2)
-    j3 = sim.getJointPosition(joint3)
-    # j4 = sim.getJointPosition(joint4)
-    print(j1*(180/np.pi), j2*(180/np.pi), j3*(180/np.pi))
-
-
-get_ang()
-'''
+print(len(controlledTrajectoryList1))
