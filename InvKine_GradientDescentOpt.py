@@ -5,7 +5,6 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy
 
 
 # link length
@@ -16,10 +15,10 @@ import scipy
 L1 = 0.289  # in m, length of link1
 L2 = 0.372  # in m, length of link2
 L3 = 0.351
-L4 = 0.40
+L4 = 0.33
 
 # Example: Initial guess for joint angles
-initial_guess = np.array([0.0, 0.0, 0.0, 0.0])
+initial_guess = np.array([0, 0, 0, 0])
 
 
 def computeTransformationMatrix(q1, q2, q3, q4):
@@ -115,6 +114,10 @@ def pseudoJac(t1, t2, t3, t4):
 
 
 def invOpt(q1_initial, q2_initial, q3_initial, q4_initial, x, y, z):
+    '''
+    takes joint angles in degress and target position in metres
+    '''
+
     errorList = np.array([1])
     err = 1
     q = np.matrix([[np.deg2rad(q1_initial)], [np.deg2rad(q2_initial)], [
@@ -134,13 +137,14 @@ def invOpt(q1_initial, q2_initial, q3_initial, q4_initial, x, y, z):
     ]
     # print(jb)
 
-    while err >= 1e-4 and iter < 10000:
+    while err >= 1e-4 and iter < 2000:
 
         Rk, Dk = computeTransformationMatrix(
             q[0, 0], q[1, 0], q[2, 0], q[3, 0])
 
         # difference in actual and desired pose( both position and orientation error)
         ep = Dd-Dk
+
         # eo = Rd*Rk.T
 
         # # extracting roll,pitch and yaw from the rotation matrix(old way)
@@ -188,11 +192,12 @@ def invOpt(q1_initial, q2_initial, q3_initial, q4_initial, x, y, z):
     return np.rad2deg(q).round(decimals=1), errorList
 
 
+'''
 optimizedJointAngles, errorList = invOpt(
     initial_guess[0], initial_guess[1], initial_guess[2], initial_guess[3],
-    0.731, 0.003, 0.5)
+    0.58, -0.58, 0.1)
 
-# it will print four columns with same angles. the desired angles are in the rows.
+
 print(optimizedJointAngles)
 print(errorList[-1])
 
@@ -201,3 +206,4 @@ plt.xlabel('timesteps')
 plt.ylabel('Error magnitude')
 plt.legend()
 plt.show()
+'''

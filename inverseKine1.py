@@ -75,7 +75,7 @@ def objective_function(theta):
     error_orient = np.linalg.norm(e_pitch)
     # errorList = np.append(errorList, error)
     print(np.rad2deg(yaw), np.rad2deg(pitch), np.rad2deg(roll))
-    return 2*error_pos + error_orient
+    return 2*error_pos  # + error_orient
 
 # Define forward kinematics (replace with your actual forward kinematics function)
 
@@ -121,7 +121,7 @@ def YPR(q):
 
 
 # Desired end effector position
-desired_position = np.array([0.713, 0.110, 0.1])
+desired_position = np.array([0.58, -0.59, 0.1])
 # cup 0.58, -0.59, 0.06
 # nozzle 1, 0.05, 0.1
 #  Initial guess for joint angles

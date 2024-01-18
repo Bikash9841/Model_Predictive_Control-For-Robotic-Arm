@@ -10,6 +10,7 @@ from functionMPC import systemSimulate
 from ModelPredictiveControl_4 import ModelPredictiveControl
 import time
 from scipy.integrate import odeint
+from InvKine_GradientDescentOpt import invOpt
 
 '''
 # copelia sim here-----------------------------
@@ -93,8 +94,10 @@ def D_mat(theta0, theta1, theta2, theta3):
 
     # theta starts from 0 in this matrix
 
-    d11 = Iz1 + Iz2 + Iz3 + Iz4 + m4*pow(cos(theta0), 2)*(L3*sin(theta1 + theta2) + L2*sin(theta1) - L4*cos(theta1 + theta2 + theta3)) ** 2 + L2 ** 2*m2*sin(theta1) ** 2 + m4*sin(theta0) ** 2*(L3*sin(
+    d11 = Iz1 + Iz2 + Iz3 + Iz4 + m4*pow(cos(theta0), 2)*(L3*sin(
         theta1 + theta2) + L2*sin(theta1) - L4*cos(theta1 + theta2 + theta3)) ** 2
+    + L2 ** 2*m2*sin(theta1) ** 2 + m4*sin(theta0) ** 2*(L3*sin(theta1 +
+                                                                theta2) + L2*sin(theta1) - L4*cos(theta1 + theta2 + theta3)) ** 2
     + m3*cos(theta0) ** 2*(L3*sin(theta1 + theta2) + L2*sin(theta1)) ** 2 + \
         m3*sin(theta0) ** 2*(L3*sin(theta1 + theta2) + L2*sin(theta1)) ** 2
 
@@ -102,41 +105,39 @@ def D_mat(theta0, theta1, theta2, theta3):
     d13 = 0
     d14 = 0
     d21 = 0
+
     d22 = Ix3 + Ix4/2 + Iy2 + Iy4/2 + L2 ** 2*m2 + L2 ** 2*m3 + L2 ** 2 * \
         m4 + L3 ** 2*m3 + L3 ** 2*m4 + L4 ** 2*m4 - (Ix4*cos(2*theta0))/2
-    + (Iy4*cos(2*theta0))/2 - Ix3*cos(theta0) ** 2 + \
-        Iy3*cos(theta0) ** 2 + Ix2*sin(theta0) ** 2
-    - Iy2*sin(theta0) ** 2 + 2*L2*L4*m4 * \
-        sin(theta2 + theta3) + 2*L2*L3*m3*cos(theta2)
-    + 2*L2*L3*m4*cos(theta2) + 2*L3*L4*m4*sin(theta3)
+    + (Iy4*cos(2*theta0))/2 - Ix3*cos(theta0) ** 2 + Iy3*cos(theta0) ** 2 + Ix2 * \
+        sin(theta0) ** 2 - Iy2*sin(theta0) ** 2 + \
+        2*L2*L4*m4 * sin(theta2 + theta3)
+    + 2*L2*L3*m3*cos(theta2) + 2*L2*L3*m4*cos(theta2) + 2*L3*L4*m4*sin(theta3)
 
-    d23 = Ix3 + Ix4/2 + Iy4/2 + L3 ** 2*m3 + L3 ** 2*m4 + L4 ** 2 * \
-        m4 - (Ix4*cos(2*theta0))/2 + (Iy4*cos(2*theta0))/2
-    - Ix3*cos(theta0) ** 2 + Iy3*cos(theta0) ** 2 + L2*L4 * \
-        m4*sin(theta2 + theta3) + L2*L3*m3*cos(theta2)
-    + L2*L3*m4*cos(theta2) + 2*L3*L4*m4*sin(theta3)
+    d23 = Ix3 + Ix4/2 + Iy4/2 + L3 ** 2*m3 + L3 ** 2*m4 + L4 ** 2 * m4 - \
+        (Ix4*cos(2*theta0))/2 + (Iy4*cos(2*theta0)) / \
+        2 - Ix3*cos(theta0) ** 2 + Iy3*cos(theta0) ** 2
+    + L2*L4 * m4*sin(theta2 + theta3) + L2*L3*m3*cos(theta2) + \
+        L2*L3*m4*cos(theta2) + 2*L3*L4*m4*sin(theta3)
 
-    d24 = Ix4/2 + Iy4/2 + L4 ** 2*m4 - (Ix4*cos(2*theta0))/2
-    + (Iy4*cos(2*theta0))/2 + L2*L4*m4 * \
-        sin(theta2 + theta3) + L3*L4*m4*sin(theta3)
+    d24 = Ix4/2 + Iy4/2 + L4 ** 2*m4 - (Ix4*cos(2*theta0))/2 + (
+        Iy4*cos(2*theta0))/2 + L2*L4*m4 * sin(theta2 + theta3) + L3*L4*m4*sin(theta3)
 
     d31 = 0
-    d32 = Ix3 + Ix4/2 + Iy4/2 + L3 ** 2*m3 + L3 ** 2 * \
-        m4 + L4 ** 2*m4 - (Ix4*cos(2*theta0))/2
-    + (Iy4*cos(2*theta0))/2 - Ix3*cos(theta0) ** 2 + Iy3 * \
-        cos(theta0) ** 2 + L2*L4*m4*sin(theta2 + theta3)
-    + L2*L3*m3*cos(theta2) + L2*L3*m4*cos(theta2) + 2*L3*L4*m4*sin(theta3)
-    d33 = Iy3 + Iy4 + L3 ** 2*m3 + L3 ** 2*m4 + L4 ** 2 * \
-        m4 + Ix3*sin(theta0) ** 2 + Ix4*sin(theta0) ** 2
-    - Iy3*sin(theta0) ** 2 - Iy4*sin(theta0) ** 2 + 2*L3*L4*m4*sin(theta3)
+    d32 = Ix3 + Ix4/2 + Iy4/2 + L3 ** 2*m3 + L3 ** 2 * m4 + L4 ** 2*m4 - (Ix4*cos(2*theta0))/2 + (Iy4*cos(2*theta0))/2 - Ix3*cos(theta0) ** 2 + Iy3 * \
+        cos(theta0) ** 2 + L2*L4*m4*sin(theta2 + theta3) + L2*L3*m3 * \
+        cos(theta2) + L2*L3*m4*cos(theta2) + 2*L3*L4*m4*sin(theta3)
+
+    d33 = Iy3 + Iy4 + L3 ** 2*m3 + L3 ** 2*m4 + L4 ** 2 * m4 + Ix3 * \
+        sin(theta0) ** 2 + Ix4*sin(theta0) ** 2 - \
+        Iy3*sin(theta0) ** 2 - Iy4*sin(theta0) ** 2
+    + 2*L3*L4*m4*sin(theta3)
 
     d34 = Iy4 + L4 ** 2*m4 + Ix4 * \
         sin(theta0) ** 2 - Iy4*sin(theta0) ** 2 + L3*L4*m4*sin(theta3)
 
     d41 = 0
-    d42 = Ix4/2 + Iy4/2 + L4 ** 2*m4 - \
-        (Ix4*cos(2*theta0))/2 + (Iy4*cos(2*theta0))/2
-    + L2*L4*m4*sin(theta2 + theta3) + L3*L4*m4*sin(theta3)
+    d42 = Ix4/2 + Iy4/2 + L4 ** 2*m4 - (Ix4*cos(2*theta0))/2 + (
+        Iy4*cos(2*theta0))/2 + L2*L4*m4*sin(theta2 + theta3) + L3*L4*m4*sin(theta3)
     d43 = Iy4 + L4 ** 2*m4 + Ix4 * \
         sin(theta0) ** 2 - Iy4*sin(theta0) ** 2 + L3*L4*m4*sin(theta3)
     d44 = Iy4 + L4 ** 2*m4 + Ix4*sin(theta0) ** 2 - Iy4*sin(theta0) ** 2
@@ -331,22 +332,6 @@ def ABC_final(theta0, theta1, theta2, theta3, dtheta0, dtheta1, dtheta2, dtheta3
     return A, B, C
 
 
-def invK(x, y, z, q1, q2, q3):
-
-    # converting origin angles from degress to radian
-    q2 = np.deg2rad(q2)
-    q3 = np.deg2rad(q3)
-
-    q1 = np.arctan2(y, x)
-
-    ex = L2*np.cos(q2)+L3*np.cos(q2+q3)
-    ez = L2*np.sin(q2)+L3*np.sin(q2+q3)
-
-    q3 = np.arccos((pow(ex, 2)+pow(ez, 2)-(pow(L2, 2)+pow(L3, 2)))/2*L2*L3)
-    q2 = np.arctan2(ez, ex)-np.arctan2((L3*np.sin(q3)), (L2+L3*np.cos(q3)))
-    return np.rad2deg(q1), np.rad2deg(q2), np.rad2deg(q3)
-
-
 A, B, C = ABC_final(
     theta[0], theta[1], theta[2], theta[3], dtheta[0], dtheta[1], dtheta[2], dtheta[3])
 
@@ -398,15 +383,21 @@ for i in range(f):
 
 
 # desired trajectory generation
-timeSteps = 150
+timeSteps = 250
 
 # ------------------simple trajectory--------------------------------
-# xd, yd, zd = invK(0.4, 0.2, 0, 0, 90, 0)
-# print(xd, yd, zd)
+optimizedJointAngles, _ = invOpt(
+    theta[0], theta[1], theta[2], theta[3], 0.58, -0.58, 0.1)
+
+print(f"required joint angles: {optimizedJointAngles}")
+print(optimizedJointAngles[0, 0],
+      optimizedJointAngles[1, 0], optimizedJointAngles[2, 0], optimizedJointAngles[3, 0])
 
 start_positions = np.matrix([[0], [0], [0], [0]])  # Initial joint angles
-end_positions = np.matrix([[30], [45], [-90], [90]])  # Final joint angles
-# end_positions = np.matrix([[joint1], [joint2], [joint3], [joint4]])
+end_positions = np.matrix([[optimizedJointAngles[0, 0]],
+                           [optimizedJointAngles[1, 0]],
+                           [optimizedJointAngles[2, 0]],
+                           [optimizedJointAngles[3, 0]]])
 
 # Generate time vector
 timeVector = np.linspace(0, 1, timeSteps)
@@ -545,6 +536,8 @@ axs[0, 0].plot(desiredTrajectoryList1, linewidth=4, color='black',
 axs[0, 0].plot(controlledTrajectoryList1, linewidth=3, linestyle='dashed', color='black',
                label='Controlled trajectory1')
 axs[0, 0].set_title('JOINT 1')
+axs[0, 0].set_ylabel('Joint Angles (in deg)')
+axs[0, 0].set_xlabel('timesteps')
 axs[0, 0].legend()
 # -------------------------------------------------------------
 
@@ -553,6 +546,7 @@ axs[0, 1].plot(desiredTrajectoryList2, linewidth=4, color='black',
 axs[0, 1].plot(controlledTrajectoryList2, linewidth=3, linestyle='dashed', color='black',
                label='Controlled trajectory2')
 axs[0, 1].set_title('JOINT 2')
+axs[0, 1].set_xlabel('timesteps')
 axs[0, 1].legend()
 # ---------------------------------------------------------------
 
@@ -561,6 +555,8 @@ axs[0, 2].plot(desiredTrajectoryList3, linewidth=4, color='black',
 axs[0, 2].plot(controlledTrajectoryList3, linewidth=3, linestyle='dashed', color='black',
                label='Controlled trajectory3')
 axs[0, 2].set_title('JOINT 3')
+axs[0, 2].set_ylabel('Joint Angles (in deg)')
+axs[0, 2].set_xlabel('timesteps')
 axs[0, 2].legend()
 # ---------------------------------------------------------------
 
@@ -569,27 +565,36 @@ axs[0, 3].plot(desiredTrajectoryList4, linewidth=4, color='black',
 axs[0, 3].plot(controlledTrajectoryList4, linewidth=3, linestyle='dashed', color='black',
                label='Controlled trajectory4')
 axs[0, 3].set_title('JOINT 4')
+axs[0, 3].set_xlabel('timesteps')
 axs[0, 3].legend()
 
 axs[1, 0].plot(controlInputList1, linewidth=4, color='black',
                label='Control Torque1')
 axs[1, 0].set_title('Torque of Joint1')
+axs[1, 0].set_ylabel('Torque (Nm)')
+axs[1, 0].set_xlabel('timesteps')
 axs[1, 0].legend()
+
 axs[1, 1].plot(controlInputList2, linewidth=4, color='black',
                label='Control Torque2')
 axs[1, 1].set_title('Torque of Joint2')
+axs[1, 1].set_xlabel('timesteps')
 axs[1, 1].legend()
+
 axs[1, 2].plot(controlInputList3, linewidth=4, color='black',
                label='Control Torque3')
 axs[1, 2].set_title('Torque of Joint3')
+axs[1, 2].set_ylabel('Torque (Nm)')
+axs[1, 2].set_xlabel('timesteps')
 axs[1, 2].legend()
+
 axs[1, 3].plot(controlInputList4, linewidth=4, color='black',
                label='Control Torque4')
 axs[1, 3].set_title('Torque of Joint4')
+axs[1, 3].set_xlabel('timesteps')
 axs[1, 3].legend()
 
 plt.show()
-
 '''
 for i in range(timeSteps):
 
