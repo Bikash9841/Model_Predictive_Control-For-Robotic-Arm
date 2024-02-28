@@ -20,18 +20,24 @@ from plots import visualize
 # prediction horizon
 f = 10
 # control horizon
-v = 5
+v = 10
 
 # new constants here for 3dof arm
 
-m1 = 0.3  # in kg, mass of link1
-m2 = 0.3  # in kg, mass of link2
-m3 = 0.3
-m4 = 0.3
+m1 = 0.6  # in kg, mass of link1
+m2 = 0.6  # in kg, mass of link2
+m3 = 0.6
+m4 = 0.6
+# L1 = 0.17  # in m, length of link1
+# L2 = 0.20  # in m, length of link2
+# L3 = 0.20
+# L4 = 0.20
+
 L1 = 0.289  # in m, length of link1
 L2 = 0.372  # in m, length of link2
 L3 = 0.351
 L4 = 0.33
+
 l1 = L1 / 2
 l2 = L2 / 2
 l3 = L3 / 2
@@ -312,8 +318,8 @@ for i in range(v):
 # W2 matrix
 # Q0 = 0.0000000011
 # Qother = 0.0001
-Q0 = 0.00000000011
-Qother = 0.0001
+Q0 = 0.001
+Qother = 0.001
 
 W2 = np.zeros(shape=(v * m, v * m))
 
@@ -341,13 +347,23 @@ for i in range(f):
 timeSteps = 250
 
 # ------------------simple trajectory--------------------------------
-optimizedJointAngles, _ = invOpt(0, 0, 0, 0, 0.58, -0.58, 0.1)
+optimizedJointAngles, errorList = invOpt(
+    0, 0, 0, 0, 0.3169, 0.3701, 0.07)
 
-print(f"required joint angles: {optimizedJointAngles}")
-print(optimizedJointAngles[0, 0],
-      optimizedJointAngles[1, 0], optimizedJointAngles[2, 0], optimizedJointAngles[3, 0])
 
-start_positions = np.matrix([[0], [0], [0], [0]])  # Initial joint angles
+plt.plot(errorList, linewidth=4, label='Pose Error')
+plt.xlabel('iterations')
+plt.ylabel('Error magnitude')
+plt.legend()
+plt.show()
+
+# print(f"required joint angles: {optimizedJointAngles}")
+# print(optimizedJointAngles[0, 0],
+#       optimizedJointAngles[1, 0], optimizedJointAngles[2, 0], optimizedJointAngles[3, 0])
+
+
+start_positions = np.matrix(
+    [[0], [0], [0], [0]])  # Initial joint angles
 end_positions = np.matrix([[optimizedJointAngles[0, 0]],
                            [optimizedJointAngles[1, 0]],
                            [optimizedJointAngles[2, 0]],
@@ -431,7 +447,8 @@ x0 = x0test
 mpc = ModelPredictiveControl(A, B, C, f, v, W3, W4, x0, desiredTrajectory)
 
 # mpc.computeControlInputs()
-
+# mpc.computeControlInputs()
+# mpc.computeControlInputs()
 
 # Simulate the controller
 for j in range(timeSteps):
@@ -439,7 +456,7 @@ for j in range(timeSteps):
     if mpc.currentTimeStep:
 
         # Update weights based on the error (replace with your logic)
-        scaling_factor = 0.001  # Adjust this scaling factor as needed
+        scaling_factor = 0.2  # Adjust this scaling factor as needed
         # new_W4 = W4 + scaling_factor * error * np.eye(f * r)
         new_W4 = mpc.W4 + scaling_factor * np.eye(f * r)
 
@@ -488,4 +505,64 @@ visualize(desiredTrajectoryList1, controlledTrajectoryList1, desiredTrajectoryLi
           desiredTrajectoryList3, controlledTrajectoryList3, desiredTrajectoryList4, controlledTrajectoryList4,
           controlInputList1, controlInputList2, controlInputList3, controlInputList4)
 
-print(len(controlledTrajectoryList1))
+# print(len(controlledTrajectoryList1))
+
+future1 = []
+future2 = []
+future3 = []
+future4 = []
+print(mpc.currentTimeStep)
+
+for i in range((timeSteps*10)):
+    future1.append(mpc.phout[i][0, 0])
+    future2.append(mpc.phout[i][1, 0])
+    future3.append(mpc.phout[i][2, 0])
+    future4.append(mpc.phout[i][3, 0])
+
+
+# this one to try about
+
+# future1 = controlledTrajectoryList1.copy()
+# for i in range(10):
+#     print(f'previous: {future1[95+i]}')
+#     future1[95+i] = (mpc.phout[950+i][0, 0])
+#     print(f'predicted: {mpc.phout[950+i][0, 0]}')
+#     print(f'assignged: {future1[95+i]}')
+#     future2.append(mpc.phout[i][1, 0])
+#     future3.append(mpc.phout[i][2, 0])
+#     future4.append(mpc.phout[i][3, 0])
+
+
+print(len(mpc.phout))
+print("thoss")
+# print(future1)
+
+fig, axs = plt.subplots(1, 1, figsize=(8, 6))
+axs.plot(controlledTrajectoryList1[0:10], linewidth=4, color='black',
+         label='controlled trajectory1')
+axs.plot(future1[0:10], linewidth=3, linestyle='dashed', color='black',
+         label='predicted trajectory')
+
+# axs.plot(controlledTrajectoryList2, linewidth=4, color='blue',
+#          label='controlled trajectory2')
+# axs.plot(future2, linewidth=3, color='blue',
+#          label='future trajectory2')
+
+# axs.plot(controlledTrajectoryList3, linewidth=4, color='yellow',
+#          label='controlled trajectory3')
+# axs.plot(future3, linewidth=3, color='yellow',
+#          label='future trajectory3')
+
+# axs.plot(future4[40:50], linewidth=3, color='green',
+#          label='future trajectory4')
+# axs.plot(controlledTrajectoryList4[40:51], linewidth=3, color='green',
+#          label='controlled trajectory4')
+axs.set_title('JOINT 1')
+axs.set_ylabel('Joint Angles (in deg)')
+axs.set_xlabel('timesteps')
+axs.legend()
+
+plt.show()
+
+
+# print(mpc.phout.shape)

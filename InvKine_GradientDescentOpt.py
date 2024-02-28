@@ -12,13 +12,20 @@ import matplotlib.pyplot as plt
 # a2 = 0.37
 # a3 = 0.354
 # a4 = 0.28
-L1 = 0.289  # in m, length of link1
-L2 = 0.372  # in m, length of link2
-L3 = 0.351
-L4 = 0.33
+
+# L1 = 0.289  # in m, length of link1
+# L2 = 0.372  # in m, length of link2
+# L3 = 0.351
+# L4 = 0.33
+
+L1 = 0.17  # in m, length of link1
+L2 = 0.20  # in m, length of link2
+L3 = 0.20
+L4 = 0.20
+
 
 # Example: Initial guess for joint angles
-initial_guess = np.array([0, 0, 0, 0])
+# initial_guess = np.array([0, 0, 0, 0])
 
 
 def computeTransformationMatrix(q1, q2, q3, q4):
@@ -137,7 +144,7 @@ def invOpt(q1_initial, q2_initial, q3_initial, q4_initial, x, y, z):
     ]
     # print(jb)
 
-    while err >= 1e-4 and iter < 2000:
+    while err >= 1e-2 and iter < 250:
 
         Rk, Dk = computeTransformationMatrix(
             q[0, 0], q[1, 0], q[2, 0], q[3, 0])
@@ -167,6 +174,8 @@ def invOpt(q1_initial, q2_initial, q3_initial, q4_initial, x, y, z):
 
         # deriving the pose error vector
         delx[0:3, :] = ep
+
+        # pitch error should be zero. but offset of 5deg is taken as it provide good results
         delx[3:6, :] = [[0], [np.deg2rad(5)-pitch], [0]]
 
         Jinv = pseudoJac(q[0, 0], q[1, 0], q[2, 0], q[3, 0])
@@ -191,6 +200,10 @@ def invOpt(q1_initial, q2_initial, q3_initial, q4_initial, x, y, z):
 
     return np.rad2deg(q).round(decimals=1), errorList
 
+
+# optimizedJointAngles, _ = invOpt(
+#     0, 0, 0, 0, 0.587, -0.764, 0.05)
+# print(optimizedJointAngles)
 
 '''
 optimizedJointAngles, errorList = invOpt(

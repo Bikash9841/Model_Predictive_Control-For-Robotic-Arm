@@ -26,14 +26,27 @@ class ModelPredictiveControl(object):
     # sampling = 0.05
     sampling = 0.06
 
-    m1 = 0.3  # in kg, mass of link1
-    m2 = 0.3  # in kg, mass of link2
-    m3 = 0.3
-    m4 = 0.3
+    # m1 = 0.3  # in kg, mass of link1
+    # m2 = 0.3  # in kg, mass of link2
+    # m3 = 0.3
+    # m4 = 0.3
     L1 = 0.289  # in m, length of link1
     L2 = 0.372  # in m, length of link2
     L3 = 0.351
     L4 = 0.33
+    # l1 = L1 / 2
+    # l2 = L2 / 2
+    # l3 = L3 / 2
+    # l4 = L4/2
+
+    m1 = 0.6  # in kg, mass of link1
+    m2 = 0.6  # in kg, mass of link2
+    m3 = 0.6
+    m4 = 0.6
+    # L1 = 0.17  # in m, length of link1
+    # L2 = 0.20  # in m, length of link2
+    # L3 = 0.20
+    # L4 = 0.20
     l1 = L1 / 2
     l2 = L2 / 2
     l3 = L3 / 2
@@ -81,16 +94,25 @@ class ModelPredictiveControl(object):
         # this variable is used to track the current time step k of the controller
         # after every calculation of the control inpu, this variables is incremented for +1
         self.currentTimeStep = 0
+        # this is temporary timesteps
+        self.tcurrentTimeStep = 0
 
         # we store the state vectors of the controlled state trajectory
         self.states = []
+        # this is temporary states
+        self.tstates = []
+
         self.states.append(x0)
+        self.tstates.append(x0)
 
         # we store the computed inputs
         self.inputs = []
 
         # we store the output vectors of the controlled state trajectory
         self.outputs = []
+
+        # we store the predicted horizon outputs
+        self.phout = []
 
         # form the lifted system matrices and vectors
         # the gain matrix is used to compute the solution
@@ -477,6 +499,10 @@ class ModelPredictiveControl(object):
         # compute the control sequence
         inputSequenceComputed = np.matmul(self.gainMatrix, vectorS)
 
+        # print(f'timeinstant: {self.currentTimeStep}')
+        # print(f'input sequence computed every time instant: {
+        #       inputSequenceComputed.shape}')
+
         D = self.D_mat(self.state_kp1[0, 0],
                        self.state_kp1[1, 0], self.state_kp1[2, 0], self.state_kp1[3, 0])
         G = self.Gra_mat(
@@ -484,11 +510,40 @@ class ModelPredictiveControl(object):
 
         inputApplied = np.zeros(shape=(4, 1))
 
+        if self.currentTimeStep >= 0:
+
+            # put in loop from here---------------------------------------------------------------------
+            l = 4
+
+            for k in range(0, 40, 4):
+                # print(k, l)
+                inputApplied[0:4, :] = inputSequenceComputed[k:l, :]
+
+                # compute the next state and output
+                self.state_kp1, output_k = self.propagateDynamics(
+                    inputApplied, self.tstates[self.tcurrentTimeStep])
+
+                # print(f'shape of output computed every time instant: {
+                #     output_k.shape}')
+
+                self.tstates.append(self.state_kp1)
+                # self.outputs.append(output_k)
+                self.phout.append(output_k)
+                # self.inputs.append(inputApplied)
+
+                # angles converted to radian because the dynamic equations takes angles in radian
+                # self.state_kp1 = self.state_kp1*(np.pi/180)
+                # self.O, self.M, self.gainMatrix = self.formLiftedMatrices(self.state_kp1[0, 0], self.state_kp1[1, 0],
+                #                                                           self.state_kp1[2,
+                #                                                                          0], self.state_kp1[3, 0],
+                #                                                           self.state_kp1[4, 0], self.state_kp1[5, 0], self.state_kp1[6, 0], self.state_kp1[7, 0])
+                l = l+4
+                self.tcurrentTimeStep = self.tcurrentTimeStep+1
+
+        # print(self.phout)
+
+        # put in loop until here----------------------------------------------------------------------
         inputApplied[0:4, :] = inputSequenceComputed[0:4, :]
-
-        # --------------------------------------this one is torque that is computed----------------------------
-
-        # print(inputApplied, self.states[self.currentTimeStep])
         # compute the next state and output
         self.state_kp1, output_k = self.propagateDynamics(
             inputApplied, self.states[self.currentTimeStep])
@@ -498,9 +553,16 @@ class ModelPredictiveControl(object):
 
         # self.states.append(self.state_kp1[:])
         self.states.append(self.state_kp1)
+
+        # append the state that is actually used to obtain controlled trajectory to the final state of the temporary state
+        # so that the "future-prediction" starts from there for the next step
+        self.tstates.append(self.state_kp1)
+        self.tcurrentTimeStep = self.tcurrentTimeStep+1
+
         self.outputs.append(output_k)
         self.inputs.append(inputApplied)
 
+        # angles converted to radian because the dynamic equations takes angles in radian
         self.state_kp1 = self.state_kp1*(np.pi/180)
         self.O, self.M, self.gainMatrix = self.formLiftedMatrices(self.state_kp1[0, 0], self.state_kp1[1, 0],
                                                                   self.state_kp1[2,
